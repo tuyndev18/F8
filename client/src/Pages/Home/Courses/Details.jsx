@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Modal from 'Components/Modal';
 import React, { useState } from 'react';
-import ReactPlayer from 'react-player/youtube'
+import ReactPlayer from 'react-player/youtube';
 
 const Lessons = () => {
   const [menu, setMenu] = useState([
@@ -9,19 +9,19 @@ const Lessons = () => {
     { id: 1, isExpened: false },
     { id: 2, isExpened: false },
   ]);
-  const Lesson = ({ id, isExpened }) => {
+  const Lesson = ({ lesson, ShowLesson }) => {
     return (
       <div className='mb-3'>
         <div
           onClick={() => {
-            ShowLesson(id);
+            ShowLesson(lesson);
           }}
-          className='flex items-center justify-between border-[1px border-slate-200 bg-[rgb(245,245,245)] rounded-md px-4 py-2'
+          className='flex items-center justify-between border-[1px border-slate-200 bg-[rgb(245,245,245)] rounded-md px-4 py-2 cursor-pointer'
         >
           <p className='w-9/12 truncate'>1. Khái niệm kỹ thuật cần biết</p>
           <p className='text-sm'>3 bài học</p>
         </div>
-        <div className={clsx('px-4 ', { hidden: !isExpened }, { block: isExpened })}>
+        <div className={clsx('px-4 ', { hidden: !lesson.isExpened }, { block: lesson.isExpened })}>
           <div className='flex items-center justify-between py-3'>
             <p className='text-sm w-9/12 truncate'>1. Mô hình Client - Server là gì?</p>
             <p className='text-sm'>11:35</p>
@@ -38,20 +38,19 @@ const Lessons = () => {
       </div>
     );
   };
-  const ShowLesson = (id) => {
-    const isShow = menu.filter((val) => val.id == id)[0];
+  const ShowLesson = (lesson) => {
     const newShow = menu.map((val) => {
-      if (val.id == id) {
+      if (val.id == lesson.id) {
         return {
-          id,
-          isExpened: !isShow.isExpened,
+          id: lesson.id,
+          isExpened: !lesson.isExpened,
         };
       }
       return val;
     });
-    console.log(newShow);
     setMenu(newShow);
   };
+
   const ShowAll = () => {
     const show = menu.map((val) => ({
       ...val,
@@ -59,6 +58,7 @@ const Lessons = () => {
     }));
     setMenu(show);
   };
+
   const HiddenAll = () => {
     const show = menu.map((val) => ({
       ...val,
@@ -66,6 +66,7 @@ const Lessons = () => {
     }));
     setMenu(show);
   };
+
   return (
     <>
       <div className='mb-3'>
@@ -86,8 +87,8 @@ const Lessons = () => {
             </button>
           )}
         </div>
-        {menu.map((val, index) => (
-          <Lesson key={index} id={val.id} isExpened={val.isExpened} ShowLesson={ShowLesson} />
+        {menu.map((lesson, index) => (
+          <Lesson key={index} lesson={lesson} ShowLesson={ShowLesson} />
         ))}
       </div>
     </>
