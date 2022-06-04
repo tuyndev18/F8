@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(70, 70, 70, 0.212);
+  border-radius: 10px;
+}
+
+.tuyn-slick .slick-dots li button::before {
+  width: 30px !important;
+  height: 8px !important;
+  content: '' !important;
+  background-color: rgba(104, 104, 104, 0.699);
+  border-radius: 15px;
+}
+.tuyn-slick .slick-dots li {
+  width: 30px !important;
+  height: 8px !important;
+}
+.tuyn-slick .slick-dots .slick-active button::before {
+  width: 42px !important;
+  height: 8px !important;
+  content: '' !important;
+  background-color: rgb(110, 110, 110);
+  border-radius: 15px;
+}
+.tuyn-slick .slick-dots .slick-active {
+  width: 42px !important;
+  height: 8px !important;
+}
+.tuyn-slick .slick-dots {
+  width: auto !important;
+  bottom: -33px !important;
+  left: 30px;
+}
+.tuyn-editor .rc-md-editor .editor-container .sec-md .input {
+  overflow-y: visible;
+  border-right: 1px solid #47474726;
+}
+.tuyn-editor .rc-md-editor .rc-md-navigation {
+  position: sticky;
+  top: 72px;
+  border: none;
+  background-color: white;
+  padding-top: 5px;
+  padding-bottom: 15px;
+  z-index: 30;
+}
+
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25% /* Player ratio: 100 / (1280 / 720) */
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
