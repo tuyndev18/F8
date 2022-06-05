@@ -8,7 +8,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import socket from './Socket/Socket.js';
 import ConnectDB from './Config/ConnectDB.js';
-import UserSchema from './Utils/Validators/User.js';
+import { client } from './Config/ConnectRedis.js';
 
 const app = express();
 const server = createServer(app);
@@ -39,8 +39,6 @@ app.use(ErrorHandling);
 app.use('*', (req, res) => {
   res.status(404).json({ mess: '404 Not Found' });
 });
-
-
 
 //listen to server
 const PORT = process.env.PORT || 5000;

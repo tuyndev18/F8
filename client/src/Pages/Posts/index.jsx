@@ -1,25 +1,16 @@
 import clsx from 'clsx';
-import Modal from 'Components/Modal';
-import NavBar from 'Components/NavBar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FacebookSelector } from '@charkour/react-reactions';
 
 export default function PostsPage() {
   const [isModal, setModal] = useState(false);
-  return (<div>
-    
-   <h2 className='relative mt-24' onMouseEnter={()=> {
-     setModal(true)
-   }} onMouseLeave={()=> {
-     setModal(false)
-   }}>
-     Thích
-     <div className={clsx('absolute top-[-60px] overflow-hidden', {"h-0": !isModal}, {"h-auto": isModal})} >
-    <FacebookSelector />
-    </div>
-   </h2>
-   
-  </div>)
+  const isMove = useRef(false);
+
+  return (
+    <>
+      <main></main>
+    </>
+  );
 }
 
 {
@@ -47,4 +38,33 @@ export default function PostsPage() {
     </h4>
   </div>
 </Modal> */
+}
+
+{
+  /* <h2
+className='relative mt-24 cursor-pointer tuyn-wrap py-3 hover:first:block inline-block mb-10'
+onMouseMove={() => {
+  if (!isMove.current) {
+    setModal(true);
+    isMove.current = true;
+  }
+}}
+onMouseLeave={() => {
+  if (isMove.current) {
+    isMove.current = false;
+    setModal(false);
+  }
+}}
+>
+Thích
+<div className={clsx('absolute top-[-50px] tuyn-reactions', { hidden: !isModal }, { block: isModal })}>
+  <FacebookSelector
+    onSelect={(data) => {
+      console.log(data);
+      setModal(false);
+    }}
+  />
+</div>
+</h2>
+/> */
 }
