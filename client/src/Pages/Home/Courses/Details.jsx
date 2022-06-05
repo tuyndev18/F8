@@ -40,7 +40,7 @@ const Lessons = () => {
   };
   const ShowLesson = (lesson) => {
     const newShow = menu.map((val) => {
-      if (val.id === lesson.id) {
+      if (val.id == lesson.id) {
         return {
           id: lesson.id,
           isExpened: !lesson.isExpened,
@@ -48,9 +48,9 @@ const Lessons = () => {
       }
       return val;
     });
-    console.log(newShow);
     setMenu(newShow);
   };
+
   const ShowAll = () => {
     const show = menu.map((val) => ({
       ...val,
@@ -58,6 +58,7 @@ const Lessons = () => {
     }));
     setMenu(show);
   };
+
   const HiddenAll = () => {
     const show = menu.map((val) => ({
       ...val,
@@ -65,6 +66,7 @@ const Lessons = () => {
     }));
     setMenu(show);
   };
+
   return (
     <>
       <div className='mb-3'>
@@ -85,8 +87,8 @@ const Lessons = () => {
             </button>
           )}
         </div>
-        {menu.map((val, index) => (
-          <Lesson key={index} lesson={val} ShowLesson={ShowLesson} />
+        {menu.map((lesson, index) => (
+          <Lesson key={index} lesson={lesson} ShowLesson={ShowLesson} />
         ))}
       </div>
     </>

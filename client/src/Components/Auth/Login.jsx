@@ -1,6 +1,7 @@
-import { AxiosConfig } from 'Apis/AxiosConfig';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useInfiniteQuery, useQueryClient } from 'react-query';
 import { Link } from 'react-router-dom';
 
 export default function Login() {
@@ -10,6 +11,7 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   return (
     <>
       <h3 className='text-2xl md:text-3xl font-bold mb-10'>Đăng nhập vào F8</h3>
@@ -46,10 +48,7 @@ export default function Login() {
       )}
       {isMenu && (
         <>
-          <form
-            onSubmit={handleSubmit(data => console.log(data))}
-            className='w-full flex flex-col items-center'
-          >
+          <form onSubmit={handleSubmit()} className='w-full flex flex-col items-center'>
             <input
               type='text'
               className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
@@ -69,10 +68,6 @@ export default function Login() {
               Đăng nhập
             </button>
           </form>
-          <button onClick={async () => {
-           const  data = await AxiosConfig.post("/posts/all")
-           console.log(data)
-          }}>auth</button>
           <div
             className='top-9 left-10 absolute'
             onClick={() => {

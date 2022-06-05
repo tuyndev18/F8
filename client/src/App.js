@@ -27,6 +27,7 @@ function App() {
         <Route path='login' element={<Login />} />
         <Route path='register' element={<Register />} />
       </Route>
+      <Route path='blog/:slug' element={<PostsPage />} />
       <Route path='/' element={<HomePage />}>
         <Route path='' element={<Main />} />
         <Route path='learning' element={<LearningPage />}>

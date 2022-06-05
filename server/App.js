@@ -8,6 +8,7 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import socket from './Socket/Socket.js';
 import ConnectDB from './Config/ConnectDB.js';
+import { client } from './Config/ConnectRedis.js';
 
 const app = express();
 const server = createServer(app);
@@ -18,6 +19,9 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+
+//CONNECT TO MONGODB
+ConnectDB();
 
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
@@ -35,9 +39,6 @@ app.use(ErrorHandling);
 app.use('*', (req, res) => {
   res.status(404).json({ mess: '404 Not Found' });
 });
-
-//CONNECT TO MONGODB
-ConnectDB();
 
 //listen to server
 const PORT = process.env.PORT || 5000;

@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import UsersModal from '../models/UserModel.js';
 import { ArraySecret, GenerateOtp, GenerateSecret, VerifyOtp } from '../Config/OtpConfig.js';
 import { SendMail } from '../Utils/SendMail.js';
+import { client } from '../Config/ConnectRedis.js';
 
 let arrSecret = [];
-let refreshTokens = [];
 
 const authCtrl = {
   register: async (req, res, next) => {
@@ -15,11 +15,7 @@ const authCtrl = {
       if (user) {
         return res.status(400).json({ message: 'This email already exists' });
       }
-      if (password.length < 6) {
-        return res.status(400).json({ message: 'Password must be greater equal 6' });
-      }
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
+      const passwordHash = await bcrypt.hash(password, 10);
       const newUser = await UsersModal.create({
         userName: userName,
         email: email,
@@ -30,49 +26,57 @@ const authCtrl = {
       next(error);
     }
   },
+
   login: async (req, res, next) => {
     try {
       const { email, password } = req.body;
-      const user = await UsersModal.findOne({ email: email });
+      const user = await UsersModal.findOne({ email: email }).lean();
       if (!user) return res.status(400).json({ msg: "This email doesn't exists" });
 
       //check decrypt password with non-decrypt
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: 'Incorrect password' });
+
       //check all condition success , create ac_token, rf_token and send back to client
       const access_token = authCtrl.generateAccessToken(user._id);
       const refresh_token = authCtrl.generateRefreshToken(user._id);
-      refreshTokens.push(refresh_token);
+
+      client.setEx(`rf_${user._id}`, 120, refresh_token);
+
       //attach rf_token to cookie.
       res.cookie('refresh_token', refresh_token, {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
         httpOnly: true,
         secure: false,
-        sameSite: 'strict',
       });
-      const { password: passwordInDoc, ...rest } = user._doc;
+
+      const { password: passwordD, ...rest } = user;
+
       res.status(200).json({ ...rest, access_token });
     } catch (error) {
       next(error);
     }
   },
   logOut: async (req, res, next) => {
-    //Clear cookies when user logs out
-    const access_token = req.headers.authorization;
-    const refresh_token = req.cookies.refresh_token;
     try {
-      if (access_token) {
-        jwt.verify(access_token, process.env.GENERATE_AC_TOKEN, (err, user) => {
-          if (err) {
-            return res.status(401).json('Token is not valid!');
-          }
-          refreshTokens = refreshTokens.filter((token) => token !== refresh_token);
-          res.clearCookie('refresh_token');
-          return res.status(200).json('Logged out successfully!');
-        });
-      } else {
-        return res.status(401).json("You're not authenticated");
-      }
+      const refresh_token = req.cookies.refresh_token;
+      const user = jwt.decode(refresh_token);
+      await client.del(`rf_${user.userId}`);
+      res.clearCookie('refresh_token');
+      res.status(200).json({ mess: 'Logged out successfully!' });
+    } catch (error) {
+      next(error);
+    }
+  },
+  requestRefreshToken: async (req, res, next) => {
+    try {
+      const refresh_token = req.cookies.refresh_token;
+      if (!refresh_token) return res.status(400).json({ mess: 'unauthenticated user' });
+      const user = jwt.decode(refresh_token);
+      const isCheck = await client.get(`rf_${user.userId}`);
+      if (!isCheck) return res.status(400).json({ mess: 'refresh token is expired' });
+      const newToken = authCtrl.generateAccessToken(user.userId);
+      return res.json({ token: newToken });
     } catch (error) {
       next(error);
     }
@@ -92,37 +96,8 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_RF_TOKEN,
-      { expiresIn: '5m' },
+      { expiresIn: '1m' },
     );
-  },
-  requestRefreshToken: async (req, res) => {
-    //Take refresh token from user
-    const refresh_token = req.cookies.refresh_token;
-    //Send error if token is not valid
-    if (!refresh_token) return res.status(401).json("You're not authenticated");
-    if (!refreshTokens.includes(refresh_token)) {
-      return res.status(403).json('Refresh token is not valid');
-    }
-    jwt.verify(refresh_token, process.env.GENERATE_RF_TOKEN, (err, user) => {
-      if (err) {
-        return res.status(500).json({ message: err.message });
-      }
-      //create new access token, refresh token and send to user
-      refreshTokens = refreshTokens.filter((token) => token !== refresh_token);
-      const newAccessToken = authCtrl.generateAccessToken(user.userId);
-      const newRefreshToken = authCtrl.generateRefreshToken(user.userId);
-
-      refreshTokens.push(newRefreshToken);
-      res.cookie('refresh_token', newRefreshToken, {
-        expires: new Date(Date.now() + 1000 * 60 * 5),
-        httpOnly: true,
-        secure: false,
-        sameSite: 'strict',
-      });
-      return res.status(200).json({
-        access_token: newAccessToken,
-      });
-    });
   },
   sendMail: async (req, res, next) => {
     try {
