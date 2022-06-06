@@ -1,14 +1,24 @@
 import mongoose from 'mongoose';
+import slug from 'mongoose-slug-generator';
+const options = {
+  separator: '-',
+  lang: 'en',
+  truncate: 120,
+};
+
+mongoose.plugin(slug, options);
 
 const userSchema = mongoose.Schema(
   {
     userName: {
       type: String,
-      required: true,
       trim: true,
+      slug: 'fullName',
+      slug_padding_size: 2,
       unique: true,
     },
     fullName: {
+      required: true,
       type: String,
     },
     socialId: {
@@ -35,7 +45,7 @@ const userSchema = mongoose.Schema(
     location: {
       type: String,
     },
-    PostSaved: [{ type: mongoose.Types.ObjectId, ref: 'Users', default: [] }],
+    PostSaved: [{ type: mongoose.Types.ObjectId, ref: 'Posts', default: [] }],
   },
   {
     timestamps: true,

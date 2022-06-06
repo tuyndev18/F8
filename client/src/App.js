@@ -16,33 +16,48 @@ import CreatePostPage from 'Pages/CreatePost';
 import PersonalPage from 'Pages/Personal';
 import Courses from 'Pages/Home/Courses/Courses';
 import Details from 'Pages/Home/Courses/Details';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <Routes>
-      <Route path='new-post' element={<CreatePostPage />} />
-      <Route path='@:username' element={<PersonalPage />} />
-      <Route path='blog/:slug' element={<PostsPage />} />
-      <Route path='auth' element={<AuthPage />}>
-        <Route path='login' element={<Login />} />
-        <Route path='register' element={<Register />} />
-      </Route>
-      <Route path='blog/:slug' element={<PostsPage />} />
-      <Route path='/' element={<HomePage />}>
-        <Route path='' element={<Main />} />
-        <Route path='learning' element={<LearningPage />}>
-          <Route path='' element={<Learning />} />
-          <Route path='front-end-development' element={<TypeLearning />} />
-          <Route path='back-end-development' element={<TypeLearning />} />
+    <>
+      <ToastContainer
+        position='top-right'
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <Routes>
+        <Route path='new-post' element={<CreatePostPage />} />
+        <Route path='@:username' element={<PersonalPage />} />
+        <Route path='blog/:slug' element={<PostsPage />} />
+        <Route path='auth' element={<AuthPage />}>
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
         </Route>
-        <Route path='courses' element={<CoursesPage />}>
-          <Route path='' element={<Courses />} />
-          <Route path=':slug' element={<Details />} />
+        <Route path='blog/:slug' element={<PostsPage />} />
+        <Route path='/' element={<HomePage />}>
+          <Route path='' element={<Main />} />
+          <Route path='learning' element={<LearningPage />}>
+            <Route path='' element={<Learning />} />
+            <Route path='front-end-development' element={<TypeLearning />} />
+            <Route path='back-end-development' element={<TypeLearning />} />
+          </Route>
+          <Route path='courses' element={<CoursesPage />}>
+            <Route path='' element={<Courses />} />
+            <Route path=':slug' element={<Details />} />
+          </Route>
+          <Route path='blog' element={<Blog />} />
         </Route>
-        <Route path='blog' element={<Blog />} />
-      </Route>
-      <Route path='*' element={<NotFound />} />
-    </Routes>
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 

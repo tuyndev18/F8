@@ -13,7 +13,7 @@ router.get('/latest', postCtrl.getLatest);
 router.get('/relevant', postCtrl.getRelevant);
 router.get('/populate', postCtrl.getPopulate);
 router.get('/top/:type', postCtrl.getTopPost);
-router.get('/search/:type', postCtrl.getSearch);
+// router.get('/search/:type', postCtrl.getSearch);
 router.get('/:slug', postCtrl.getPostBySlug);
 router.get('/:id/comments', postCtrl.getCommentsByPostId);
 
@@ -21,6 +21,9 @@ router.get('/:id/comments', postCtrl.getCommentsByPostId);
 router.use(auth);
 
 // POST
+router.post('/testhihi', (req, res) => {
+    res.json({mess: "auth"})
+});
 router.post('/:id/like', postCtrl.likePost);
 router.post('/:id/unlike', postCtrl.unlikePost);
 router.post('/:id/comments', postCtrl.addComment);

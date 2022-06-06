@@ -1,9 +1,9 @@
-import express from 'express';
-import tagCtrl from '../controllers/TagController.js';
-const router = express.Router();
+// import express from 'express';
+// import tagCtrl from '../controllers/TagController.js';
+// const router = express.Router();
 
 
 
-router.get('/' , tagCtrl.getAllTag);
+// router.get('/' , tagCtrl.getAllTag);
 
-export default router;
+// export default router;

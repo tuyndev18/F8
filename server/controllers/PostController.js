@@ -2,7 +2,7 @@
 import postModel from '../models/PostModel.js';
 import commentModel from '../models/CommentModel.js';
 import UserModel from '../models/UserModel.js';
-import tagModel from '../models/TagModel.js';
+// import tagModel from '../models/TagModel.js';
 import { ConvertDate, RecentTimes } from '../Utils/ConvertDate.js';
 
 const postController = {
@@ -55,43 +55,43 @@ const postController = {
 		}
 	},
 
-	getSearch: async (req, res, next) => {
-		try {
-			let findQuery = null;
-			const { q, sort } = req.query;
-			const { type } = req.params;
-			let result = [];
-			switch (type) {
-				case 'posts':
-					findQuery = postModel
-						.find({ $or: [{ tags: { $in: [q] } }, { title: { $regex: q, $options: 'i' } }] })
-						.populate('userId', 'userName avatar');
-					break;
-				case 'tags':
-					findQuery = tagModel.find({ title: { $regex: q, $options: 'i' } });
-					break;
-				case 'comments':
-					findQuery = commentModel.find({ content: { $regex: q, $options: 'i' } });
-					break;
-				case 'myposts':
-					if (req.userId) {
-						findQuery = postModel
-							.find({
-								userId: req.userId,
-								$or: [{ tags: { $in: [q] } }, { title: { $regex: q, $options: 'i' } }],
-							})
-							.populate('userId', 'userName avatar');
-					}
-					break;
-			}
-			if (sort) {
-				result = await findQuery.sort({ createdAt: sort });
-			} else result = await findQuery;
-			res.json(result);
-		} catch (error) {
-			next(error);
-		}
-	},
+	// getSearch: async (req, res, next) => {
+	// 	try {
+	// 		let findQuery = null;
+	// 		const { q, sort } = req.query;
+	// 		const { type } = req.params;
+	// 		let result = [];
+	// 		switch (type) {
+	// 			case 'posts':
+	// 				findQuery = postModel
+	// 					.find({ $or: [{ tags: { $in: [q] } }, { title: { $regex: q, $options: 'i' } }] })
+	// 					.populate('userId', 'userName avatar');
+	// 				break;
+	// 			case 'tags':
+	// 				findQuery = tagModel.find({ title: { $regex: q, $options: 'i' } });
+	// 				break;
+	// 			case 'comments':
+	// 				findQuery = commentModel.find({ content: { $regex: q, $options: 'i' } });
+	// 				break;
+	// 			case 'myposts':
+	// 				if (req.userId) {
+	// 					findQuery = postModel
+	// 						.find({
+	// 							userId: req.userId,
+	// 							$or: [{ tags: { $in: [q] } }, { title: { $regex: q, $options: 'i' } }],
+	// 						})
+	// 						.populate('userId', 'userName avatar');
+	// 				}
+	// 				break;
+	// 		}
+	// 		if (sort) {
+	// 			result = await findQuery.sort({ createdAt: sort });
+	// 		} else result = await findQuery;
+	// 		res.json(result);
+	// 	} catch (error) {
+	// 		next(error);
+	// 	}
+	// },
 
 	getRelevant: async (req, res, next) => {
 		try {
