@@ -5,7 +5,6 @@ import NavBar from 'Components/NavBar';
 import { useQueryClient } from 'react-query';
 
 export default function HomeLayout({ children }) {
-  const client = useQueryClient();
   return (
     <>
       <>
@@ -16,7 +15,9 @@ export default function HomeLayout({ children }) {
               <NavBar />
             </div>
           </section>
-          <section className='w-full lg:w-[calc(100%-100px)]'>{children}</section>
+          <section className='w-full lg:w-[calc(100%-100px)]'>
+            {children}
+          </section>
         </main>
         <Footer />
       </>

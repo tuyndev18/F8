@@ -22,7 +22,7 @@ router.use(auth);
 
 // POST
 router.post('/testhihi', (req, res) => {
-    res.json({mess: "auth"})
+    res.json({data: "auth"})
 });
 router.post('/:id/like', postCtrl.likePost);
 router.post('/:id/unlike', postCtrl.unlikePost);

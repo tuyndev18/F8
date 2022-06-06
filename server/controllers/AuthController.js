@@ -4,6 +4,7 @@ import UsersModal from '../models/UserModel.js';
 import { ArraySecret, GenerateOtp, GenerateSecret, VerifyOtp } from '../Config/OtpConfig.js';
 import { SendMail } from '../Utils/SendMail.js';
 import { client } from '../Config/ConnectRedis.js';
+import NotificationsModel from '../models/NotificationModel.js';
 
 let arrSecret = [];
 
@@ -20,6 +21,11 @@ const authCtrl = {
         fullName: full_name,
         email: email,
         password: passwordHash,
+      });
+      const html = `Chúc mừng <span class="name_test">${newUser.fullName}</span>  đã chính thức gia nhập Fullstack.edu.vn. Và từ nay, hãy gọi mình là F8 nhé ❤️`;
+      await NotificationsModel.create({
+        userId: newUser._id,
+        content: html,
       });
       res.json({ message: 'Register success' });
     } catch (error) {
@@ -41,7 +47,7 @@ const authCtrl = {
       const access_token = authCtrl.generateAccessToken(user._id);
       const refresh_token = authCtrl.generateRefreshToken(user._id);
 
-      client.setEx(`rf_${user._id}`, 120, refresh_token);
+      client.setEx(`rf_${user._id}`, 60 * 60 * 24, refresh_token);
 
       //attach rf_token to cookie.
       res.cookie('refresh_token', refresh_token, {
@@ -71,12 +77,14 @@ const authCtrl = {
   requestRefreshToken: async (req, res, next) => {
     try {
       const refresh_token = req.cookies.refresh_token;
-      if (!refresh_token) return res.status(400).json({ message: 'unauthenticated user' });
+      if (!refresh_token) return res.status(401).json({ message: 'Unauthenticated User' });
       const user = jwt.decode(refresh_token);
-      const isCheck = await client.get(`rf_${user.userId}`);
-      if (!isCheck) return res.status(400).json({ message: 'refresh token is expired' });
-      const newToken = authCtrl.generateAccessToken(user.userId);
-      return res.json({ access_token: newToken });
+      const redis_rftoken = await client.get(`rf_${user.userId}`);
+      if (!!redis_rftoken && redis_rftoken === refresh_token) {
+        const newToken = authCtrl.generateAccessToken(user.userId);
+        return res.json({ data: { access_token: newToken } });
+      }
+      return res.status(401).json({ message: 'Refresh token has expired' });
     } catch (error) {
       next(error);
     }
@@ -87,7 +95,7 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_AC_TOKEN,
-      { expiresIn: '1m' },
+      { expiresIn: '2m' },
     );
   },
   generateRefreshToken: (userId) => {
