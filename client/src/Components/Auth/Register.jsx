@@ -1,8 +1,45 @@
+import { AuthApi } from 'Apis/AuthApi';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+const schema = yup.object({
+  full_name: yup.string().required('Không được để trống'),
+  email: yup.string().email('Nhập vào dạng email').required('Không được để trống'),
+  password: yup.string().required('Không được để trống'),
+  retype_password: yup
+    .string()
+    .oneOf([yup.ref('password')], 'Mật khẩu không khớp')
+    .required('Không được để trống'),
+});
 
 export default function Register() {
+
   const [isMenu, setMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const submitForm = async (data) => {
+    try {
+      const result = await AuthApi.register(data);
+      toast.success(result.message);
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 1000);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   return (
     <>
       <h3 className='text-2xl md:text-3xl font-bold mb-10'>Đăng ký tài khoản F8</h3>
@@ -39,39 +76,54 @@ export default function Register() {
       )}
       {isMenu && (
         <>
-          <input
-            type='text'
-            className='w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
-            placeholder='Nhập họ tên'
-          />
-          <input
-            type='text'
-            className='w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
-            placeholder='Nhập vào email'
-          />
-          <input
-            type='text'
-            className='w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
-            placeholder='Nhập vào mật khẩu'
-          />
-          <input
-            type='text'
-            className='w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
-            placeholder='Xác nhận mật khẩu'
-          />
-          <button className='w-8/12 text-center py-2 bg-gradient-to-tr from-[#2cccff] to-[#22dfbf] text-white rounded-md font-semibold '>
-            Đăng ký
-          </button>
+          <form onSubmit={handleSubmit(submitForm)} className='flex flex-col items-center w-full'>
+            <input
+              {...register('full_name')}
+              type='text'
+              className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
+              placeholder='Nhập họ tên'
+            />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>{errors.full_name?.message}</p>
+            <input
+              {...register('email')}
+              type='text'
+              className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
+              placeholder='Nhập vào email'
+            />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>{errors.email?.message}</p>
+            <input
+              {...register('password')}
+              type='password'
+              className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
+              placeholder='Nhập vào mật khẩu'
+            />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>{errors.password?.message}</p>
+            <input
+              {...register('retype_password')}
+              type='password'
+              className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
+              placeholder='Xác nhận mật khẩu'
+            />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>
+              {errors.retype_password?.message}
+            </p>
+            <button
+              type='submit'
+              className='w-full sm:w-8/12 text-center py-2 bg-gradient-to-tr from-[#2cccff] to-[#22dfbf] text-white rounded-md font-semibold '
+            >
+              Đăng ký
+            </button>
+          </form>
           <div
             className='top-9 left-10 absolute cursor-pointer'
             onClick={() => {
               setMenu(false);
             }}
           >
-            <svg xmlns='http://www.w3.org/2000/svg' className='h-7 w-7' viewBox='0 0 20 20' fill='currentColor'>
+            <svg xmlns='http://www.w3.org/2000/svg' className='h-9 w-9' viewBox='0 0 20 20' fill='currentColor'>
               <path
                 fillRule='evenodd'
-                d='M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z'
+                d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
                 clipRule='evenodd'
               />
             </svg>

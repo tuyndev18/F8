@@ -3,14 +3,13 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './global.css';
 import ReactDOM from 'react-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
-const queryClient = new QueryClient();
+import client from 'QueryClient';
 
 ReactDOM.render(
   <>
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <BrowserRouter>
         <App />
       </BrowserRouter>

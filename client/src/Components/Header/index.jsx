@@ -1,27 +1,116 @@
+import { AuthApi } from 'Apis/AuthApi';
 import clsx from 'clsx';
 import Modal from 'Components/Modal';
+import { navLink } from 'Constants/NavLink';
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from 'react-query';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Header() {
   const [isMenu, setMenu] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const client = useQueryClient();
+  const current_user = client.getQueryData('current_user');
+  const logOut = async () => {
+    try {
+      await AuthApi.logout();
+      localStorage.removeItem('current_user');
+      client.removeQueries('current_user');
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 1000);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
 
   return (
-    <div className='fixed top-0 bg-white w-full z-40'>
+    <div className='fixed top-0 bg-white w-full z-40 '>
       <Modal isModal={isMenu} setModal={setMenu}>
         <div
           className={clsx(
-            'fixed top-0 left-0 h-screen w-10/12 bg-white shadow-xl z-50 transition-transform duration-500',
+            'fixed top-0 left-0 h-screen w-10/12 bg-white shadow-xl z-50 transition-transform duration-500 pl-4 pt-12',
             {
               'translate-x-0': isMenu,
               'translate-x-[-100%]': !isMenu,
             },
           )}
-        ></div>
+        >
+          <div>
+            {!current_user ? (
+              <>
+                <NavLink
+                  to='/auth/login'
+                  className={({ isActive }) =>
+                    isActive
+                      ? 'py-4 my-1 px-4 flex gap-4 w-auto bg-[#e8ebed] rounded-l-lg items-center'
+                      : 'py-4 my-1 px-4 flex gap-4 w-auto items-center'
+                  }
+                >
+                  <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                    <path
+                      fillRule='evenodd'
+                      d='M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                  <p className='capitalize text-xs font-semibold'>Đăng nhập</p>
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <img src={current_user?.avatar} alt='' className='w-24 h-24 rounded-full' />
+                <h1 className='py-3 text-lg font-semibold capitalize'>{current_user?.fullName}</h1>
+                <NavLink
+                  to='/auth/login'
+                  className={({ isActive }) =>
+                    isActive
+                      ? 'py-4 my-1 px-4 flex gap-4 w-auto bg-[#e8ebed] rounded-l-lg items-center'
+                      : 'py-4 my-1 px-4 flex gap-4 w-auto items-center'
+                  }
+                >
+                  <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                    <path d='M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z' />
+                  </svg>
+                  <p className='capitalize text-xs font-semibold'>Khóa học của tôi</p>
+                </NavLink>
+              </>
+            )}
+          </div>
+          <div className='border-y-[1px] py-3'>
+            {navLink.map((val, index) => (
+              <NavLink
+                to={val.path}
+                key={index}
+                className={({ isActive }) =>
+                  isActive
+                    ? 'py-4 my-1 px-4 flex gap-4 w-auto items-center bg-[#e8ebed] rounded-l-lg'
+                    : 'py-4 my-1 px-4 flex gap-4 items-center w-auto'
+                }
+              >
+                {val.icon}
+                <p className='capitalize text-xs font-semibold'>{val.title}</p>
+              </NavLink>
+            ))}
+          </div>
+          <div>
+            {current_user && (
+              <button className='flex gap-3 items-center py-3' onClick={logOut}>
+                <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                  <path
+                    fillRule='evenodd'
+                    d='M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+                <h2 className='text-xs font-semibold'>Đăng xuất</h2>
+              </button>
+            )}
+          </div>
+        </div>
       </Modal>
-
       <header className='px-5 lg:px-7 py-4 flex justify-between items-center border-b-[1px]'>
         <section
           className='lg:hidden'
@@ -104,9 +193,21 @@ export default function Header() {
               />
             </svg>
           </div>
-          <Link to='/auth/login'>
-            <button className='px-4 py-2 rounded-full bg-orange-500 text-white'>Đăng nhập</button>
-          </Link>
+          {!current_user ? (
+            <Link to='/auth/login'>
+              <button className='px-4 py-2 rounded-full bg-orange-500 text-white'>Đăng nhập</button>
+            </Link>
+          ) : (
+            <>
+              <div className='flex gap-6 items-center'>
+                <h2 className='text-gray-600 text-sm font-semibold hidden lg:block'>Khóa học của tôi</h2>
+                <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' viewBox='0 0 20 20' fill='currentColor'>
+                  <path d='M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z' />
+                </svg>
+              </div>
+              <img src={current_user.avatar} className='w-9 h-9 rounded-full hidden lg:block' alt='' />
+            </>
+          )}
         </section>
       </header>
     </div>

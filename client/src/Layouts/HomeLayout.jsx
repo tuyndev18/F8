@@ -1,15 +1,15 @@
+import { AuthApi } from 'Apis/AuthApi';
 import Footer from 'Components/Footer';
 import Header from 'Components/Header';
 import NavBar from 'Components/NavBar';
 import { useQueryClient } from 'react-query';
 
 export default function HomeLayout({ children }) {
-
+  const client = useQueryClient();
   return (
     <>
       <>
         <Header />
-
         <main className='px-4 lg:pr-8 lg:pl-4 mt-24 flex gap-7'>
           <section className='w-[72px] relative z-10 hidden lg:block'>
             <div className='sticky top-24'>

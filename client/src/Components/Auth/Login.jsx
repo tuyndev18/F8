@@ -1,16 +1,36 @@
+import { AuthApi } from 'Apis/AuthApi';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useInfiniteQuery, useQueryClient } from 'react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const [isMenu, setMenu] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const client = useQueryClient();
+  const navigate = useNavigate();
+
+  const submitForm = async (data) => {
+    try {
+      const user = await AuthApi.login(data);
+      client.setQueryData('current_user', user.data);
+      localStorage.setItem('current_user', JSON.stringify(user.data));
+      toast.success();
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
 
   return (
     <>
@@ -48,7 +68,7 @@ export default function Login() {
       )}
       {isMenu && (
         <>
-          <form onSubmit={handleSubmit()} className='w-full flex flex-col items-center'>
+          <form onSubmit={handleSubmit(submitForm)} className='w-full flex flex-col items-center'>
             <input
               type='text'
               className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
@@ -56,7 +76,7 @@ export default function Login() {
               {...register('email')}
             />
             <input
-              type='text'
+              type='password'
               className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
               placeholder='Nhập vào mật khẩu'
               {...register('password')}
@@ -69,15 +89,15 @@ export default function Login() {
             </button>
           </form>
           <div
-            className='top-9 left-10 absolute'
+            className='top-9 left-10 absolute cursor-pointer'
             onClick={() => {
               setMenu(false);
             }}
           >
-            <svg xmlns='http://www.w3.org/2000/svg' className='h-7 w-7' viewBox='0 0 20 20' fill='currentColor'>
+            <svg xmlns='http://www.w3.org/2000/svg' className='h-9 w-9' viewBox='0 0 20 20' fill='currentColor'>
               <path
                 fillRule='evenodd'
-                d='M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z'
+                d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
                 clipRule='evenodd'
               />
             </svg>

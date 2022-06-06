@@ -10,18 +10,18 @@ let arrSecret = [];
 const authCtrl = {
   register: async (req, res, next) => {
     try {
-      const { userName, email, password } = req.body;
+      const { full_name, email, password } = req.body;
       const user = await UsersModal.findOne({ email: email });
       if (user) {
         return res.status(400).json({ message: 'This email already exists' });
       }
       const passwordHash = await bcrypt.hash(password, 10);
       const newUser = await UsersModal.create({
-        userName: userName,
+        fullName: full_name,
         email: email,
         password: passwordHash,
       });
-      res.json({ message: 'Register success', newUser });
+      res.json({ message: 'Register success' });
     } catch (error) {
       next(error);
     }
@@ -31,11 +31,11 @@ const authCtrl = {
     try {
       const { email, password } = req.body;
       const user = await UsersModal.findOne({ email: email }).lean();
-      if (!user) return res.status(400).json({ msg: "This email doesn't exists" });
+      if (!user) return res.status(400).json({ message: "This email doesn't exists" });
 
       //check decrypt password with non-decrypt
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ msg: 'Incorrect password' });
+      if (!isMatch) return res.status(400).json({ message: 'Incorrect password' });
 
       //check all condition success , create ac_token, rf_token and send back to client
       const access_token = authCtrl.generateAccessToken(user._id);
@@ -52,7 +52,7 @@ const authCtrl = {
 
       const { password: passwordD, ...rest } = user;
 
-      res.status(200).json({ ...rest, access_token });
+      res.status(200).json({ data: { ...rest, access_token }, message: 'login successfully !' });
     } catch (error) {
       next(error);
     }
@@ -63,7 +63,7 @@ const authCtrl = {
       const user = jwt.decode(refresh_token);
       await client.del(`rf_${user.userId}`);
       res.clearCookie('refresh_token');
-      res.status(200).json({ mess: 'Logged out successfully!' });
+      res.status(200).json({ message: 'Logged out successfully!' });
     } catch (error) {
       next(error);
     }
@@ -71,12 +71,12 @@ const authCtrl = {
   requestRefreshToken: async (req, res, next) => {
     try {
       const refresh_token = req.cookies.refresh_token;
-      if (!refresh_token) return res.status(400).json({ mess: 'unauthenticated user' });
+      if (!refresh_token) return res.status(400).json({ message: 'unauthenticated user' });
       const user = jwt.decode(refresh_token);
       const isCheck = await client.get(`rf_${user.userId}`);
-      if (!isCheck) return res.status(400).json({ mess: 'refresh token is expired' });
+      if (!isCheck) return res.status(400).json({ message: 'refresh token is expired' });
       const newToken = authCtrl.generateAccessToken(user.userId);
-      return res.json({ token: newToken });
+      return res.json({ access_token: newToken });
     } catch (error) {
       next(error);
     }
@@ -87,7 +87,7 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_AC_TOKEN,
-      { expiresIn: '10s' },
+      { expiresIn: '1m' },
     );
   },
   generateRefreshToken: (userId) => {

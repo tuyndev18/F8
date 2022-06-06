@@ -11,7 +11,10 @@ export const AxiosConfig = axios.create({
 // Add a request interceptor
 AxiosConfig.interceptors.request.use(
   function (config) {
-    const token = JSON.parse(localStorage.getItem('current_user'))?.access_token || 'token';
+    if (config.url.includes('login')) {
+      return config;
+    }
+    const token = JSON.parse(localStorage.getItem('current_user'))?.access_token;
     config.headers['authorization'] = token;
     return config;
   },
@@ -26,12 +29,16 @@ AxiosConfig.interceptors.response.use(
     return response.data;
   },
   async function (error) {
-    if (error.response.status === 401) {
-      const { access_token } = await AxiosConfig.post('/auth/refresh');
-      const current_user = JSON.parse(localStorage.getItem('current_user'));
-      localStorage.setItem('current_user', JSON.stringify({ ...current_user, access_token }));
-      return AxiosConfig(error.config);
+    if (error.response?.status === 401 && error.response.data.message === 'Authorization not valid') {
+      try {
+        const { access_token } = await AxiosConfig.post('/auth/refresh');
+        const current_user = JSON.parse(localStorage.getItem('current_user'));
+        localStorage.setItem('current_user', JSON.stringify({ ...current_user, access_token }));
+        return AxiosConfig(error.config);
+      } catch (error) {
+        return Promise.reject(error);
+      }
     }
-    return Promise.reject(error);
+    return Promise.reject(error.response.data.message);
   },
 );
