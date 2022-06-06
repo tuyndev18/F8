@@ -1,6 +1,8 @@
 import { AuthApi } from 'Apis/AuthApi';
 import clsx from 'clsx';
 import Modal from 'Components/Modal';
+import NotificationModal from 'Components/Modal/NotificationModal';
+import UserModal from 'Components/Modal/UserModal';
 import { navLink } from 'Constants/NavLink';
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
@@ -13,6 +15,7 @@ export default function Header() {
   const navigate = useNavigate();
   const client = useQueryClient();
   const current_user = client.getQueryData('current_user');
+
   const logOut = async () => {
     try {
       await AuthApi.logout();
@@ -201,11 +204,9 @@ export default function Header() {
             <>
               <div className='flex gap-6 items-center'>
                 <h2 className='text-gray-600 text-sm font-semibold hidden lg:block'>Khóa học của tôi</h2>
-                <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' viewBox='0 0 20 20' fill='currentColor'>
-                  <path d='M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z' />
-                </svg>
+                <NotificationModal />
+                <UserModal />
               </div>
-              <img src={current_user.avatar} className='w-9 h-9 rounded-full hidden lg:block' alt='' />
             </>
           )}
         </section>

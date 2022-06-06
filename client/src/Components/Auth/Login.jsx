@@ -5,7 +5,13 @@ import { useForm } from 'react-hook-form';
 import { useInfiniteQuery, useQueryClient } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
+const schema = yup.object({
+  email: yup.string().email('Nhập vào dạng email').required('Không được để trống'),
+  password: yup.string().required('Không được để trống'),
+});
 export default function Login() {
   const [isMenu, setMenu] = useState(false);
 
@@ -13,17 +19,19 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-
-  const client = useQueryClient();
+  } = useForm({
+    resolver: yupResolver(schema)
+  });
+  
+  const client = useQueryClient();  
   const navigate = useNavigate();
 
   const submitForm = async (data) => {
     try {
       const user = await AuthApi.login(data);
-      client.setQueryData('current_user', user.data);
-      localStorage.setItem('current_user', JSON.stringify(user.data));
-      toast.success();
+      client.setQueryData('current_user', user);
+      localStorage.setItem('current_user', JSON.stringify(user));
+      toast.success("Đăng nhập thành công");
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -75,12 +83,16 @@ export default function Login() {
               placeholder='Nhập vào email của bạn'
               {...register('email')}
             />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>{errors.email?.message}</p>
+
             <input
               type='password'
               className='w-full sm:w-8/12 px-4 py-2 rounded-full bg-slate-200 mb-4 focus:outline-orange-400'
               placeholder='Nhập vào mật khẩu'
               {...register('password')}
             />
+            <p className='sm:ml-[-35%] pb-2 text-sm text-right text-red-500 font-medium'>{errors.password?.message}</p>
+
             <button
               className='w-full sm:w-8/12 text-center py-2 bg-gradient-to-tr from-[#2cccff] to-[#22dfbf] text-white rounded-md font-semibold'
               type='submit'

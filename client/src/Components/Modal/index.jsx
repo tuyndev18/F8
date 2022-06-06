@@ -6,7 +6,7 @@ export default function Modal({ isModal, setModal, children, isBackground }) {
     <>
       <div
         className={clsx(
-          'fixed inset-0 z-10 transition-all duration-1000',
+          'fixed inset-0 z-10 transition-all duration-1000 cursor-pointer',
           { 'bg-[#81818179]': !isBackground },
           { 'bg-transparent': isBackground },
           { hidden: !isModal },

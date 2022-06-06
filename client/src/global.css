@@ -57,3 +57,7 @@ body::-webkit-scrollbar-thumb {
   padding-bottom: 15px;
   z-index: 30;
 }
+.tuyn-notification .name_test {
+  font-weight: 600;
+  font-size: 13px;
+}

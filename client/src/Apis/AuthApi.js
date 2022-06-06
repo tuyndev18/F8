@@ -10,4 +10,7 @@ export const AuthApi = {
   register: async (body) => {
     return AxiosConfig.post('/auth/register', body);
   },
+  test: async (body) => {
+    return AxiosConfig.post('/posts/testhihi');
+  },
 };
