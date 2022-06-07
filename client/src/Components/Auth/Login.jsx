@@ -1,8 +1,7 @@
 import { AuthApi } from 'Apis/AuthApi';
-import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useInfiniteQuery, useQueryClient } from 'react-query';
+import {  useQueryClient } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
@@ -31,6 +30,7 @@ export default function Login() {
       const user = await AuthApi.login(data);
       client.setQueryData('current_user', user);
       localStorage.setItem('current_user', JSON.stringify(user));
+      localStorage.setItem('access_token', user.access_token);
       toast.success("Đăng nhập thành công");
       setTimeout(() => {
         navigate('/');

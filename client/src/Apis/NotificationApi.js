@@ -1,7 +1,7 @@
 import { AxiosConfig } from './AxiosConfig';
 
 export const NotificationApi = {
-  getAll: async () => {
+  getAll: () => {
     return AxiosConfig.get('/notifications');
   },
 };

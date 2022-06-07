@@ -6,7 +6,7 @@ export default function DefaultLayout({children}) {
   return (
    <>
    <Header/>
-   <div className='mt-20'>
+   <div className='mt-[70px]'>
    {children}
    </div>
    <Footer/>
