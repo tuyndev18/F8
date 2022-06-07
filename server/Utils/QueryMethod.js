@@ -13,7 +13,7 @@ export class QueryMethod {
 		return this;
 	}
 	sort() {
-		const type = this.query.sort || '';
+		const type = this.query.order || "asc";
 		this.method = this.method.sort({ createdAt: type });
 		return this;
 	}

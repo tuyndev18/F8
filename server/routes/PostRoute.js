@@ -9,13 +9,14 @@ router.use(decodeToken);
 
 // GET
 router.get('/tags', postCtrl.getTags);
+router.get('/all', postCtrl.getAll);
 router.get('/latest', postCtrl.getLatest);
 router.get('/relevant', postCtrl.getRelevant);
 router.get('/populate', postCtrl.getPopulate);
 router.get('/top/:type', postCtrl.getTopPost);
 // router.get('/search/:type', postCtrl.getSearch);
-router.get('/:slug', postCtrl.getPostBySlug);
 router.get('/:id/comments', postCtrl.getCommentsByPostId);
+router.get('/:slug', postCtrl.getPostBySlug);
 
 // Middleware Check Permissions
 router.use(auth);

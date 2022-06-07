@@ -17,10 +17,11 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    tags: [{ type: String }],
+    tags: { type: Array },
     slug: { type: String, slug: 'title', slug_padding_size: 3, unique: true },
     likes: [{ type: mongoose.Types.ObjectId, default: [] }],
     descriptions: { type: String },
+    heading: { type: String },
   },
 
   {

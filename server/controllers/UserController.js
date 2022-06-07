@@ -28,18 +28,18 @@ const userCtrl = {
 
 	addPost: async (req, res, next) => {
 		try {
-			let defaultBanner =
-				'https://res.cloudinary.com/tuy-n-beat/image/upload/v1652102581/default/6hqmcjaxbgbon8ydw93z_ir4bet.png';
-			const { title, content, tags, banner } = req.body;
+			const { title, content, tags, banner, descriptions, heading } = req.body;
 
 			const data = await PostModel.create({
 				title,
 				content,
 				tags,
 				userId: req.userId,
-				banner: banner || defaultBanner,
+				banner,
+				descriptions,
+				heading
 			});
-			res.status(201).json({ mess: 'successfully added new post' });
+			res.status(201).json({ message: 'successfully added new post' });
 		} catch (error) {
 			next(error);
 		}

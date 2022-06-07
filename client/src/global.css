@@ -50,12 +50,12 @@ body::-webkit-scrollbar-thumb {
 }
 .tuyn-editor .rc-md-editor .rc-md-navigation {
   position: sticky;
-  top: 72px;
+  top: 110px;
   border: none;
   background-color: white;
   padding-top: 5px;
   padding-bottom: 15px;
-  z-index: 30;
+  z-index: 20;
 }
 .tuyn-notification .name_test {
   font-weight: 600;

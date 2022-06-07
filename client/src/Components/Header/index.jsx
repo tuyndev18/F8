@@ -20,6 +20,7 @@ export default function Header() {
     try {
       await AuthApi.logout();
       localStorage.removeItem('current_user');
+      localStorage.removeItem('access_token');
       client.removeQueries('current_user');
       setTimeout(() => {
         navigate('/auth/login');

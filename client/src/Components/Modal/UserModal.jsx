@@ -1,12 +1,32 @@
+import { AuthApi } from 'Apis/AuthApi';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Modal from './index';
 
 export default function UserModal() {
   const [isModal, setModal] = useState(false);
   const client = useQueryClient();
   const current_user = client.getQueryData('current_user');
+  const navigate = useNavigate();
+
+  const logOut = async () => {
+    try {
+      await AuthApi.logout();
+      localStorage.removeItem('current_user');
+      localStorage.removeItem('access_token');
+      client.removeQueries('current_user');
+      toast.success("Đăng xuất thành công")
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 1000);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
   return (
     <>
       <div className='relative ww-auto h-auto'>
@@ -34,6 +54,13 @@ export default function UserModal() {
               <h3 className='text-sm font-light'>@{current_user?.fullName}</h3>
             </div>
           </div>
+          <Link to={`/@${current_user.userName}`}>
+            <h3 className='cursor-pointer text-[14px] p-2 text-gray-700'>Trang cá nhân</h3>
+          </Link>
+          <Link to={`/new-post`}>
+            <h3 className='cursor-pointer text-[14px] p-2 text-gray-700'>Viết Blog</h3>
+          </Link>
+          <h3 className='cursor-pointer text-[14px] p-2 text-gray-700' onClick={logOut}>Đăng xuất</h3>
         </div>
       </div>
       <Modal isModal={isModal} setModal={setModal} isBackground></Modal>

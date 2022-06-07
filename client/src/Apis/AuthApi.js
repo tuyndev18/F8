@@ -1,16 +1,13 @@
 import { AxiosConfig } from './AxiosConfig';
 
 export const AuthApi = {
-  login: async (body) => {
+  login: (body) => {
     return AxiosConfig.post('/auth/login', body);
   },
-  logout: async () => {
+  logout: () => {
     return AxiosConfig.post('/auth/log_out');
   },
-  register: async (body) => {
+  register: (body) => {
     return AxiosConfig.post('/auth/register', body);
-  },
-  test: async (body) => {
-    return AxiosConfig.post('/posts/testhihi');
   },
 };

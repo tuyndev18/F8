@@ -54,6 +54,7 @@ const authCtrl = {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
         httpOnly: true,
         secure: false,
+        sameSite: 'strict',
       });
 
       const { password: passwordD, ...rest } = user;
@@ -95,7 +96,7 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_AC_TOKEN,
-      { expiresIn: '2m' },
+      { expiresIn: '10s' },
     );
   },
   generateRefreshToken: (userId) => {
