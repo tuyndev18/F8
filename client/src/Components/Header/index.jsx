@@ -131,7 +131,7 @@ export default function Header() {
           </svg>
         </section>
 
-        <section className='gap-3 items-center hidden lg:flex'>
+        <section className='3 items-center hidden lg:flex gap-3'>
           <Link to='/'>
             <img
               className='h-9 w-9'

@@ -8,6 +8,7 @@ import { useQuery } from 'react-query';
 import { PostApi } from 'Apis/PostApi';
 import { Link, useParams } from 'react-router-dom';
 import DayJs from 'Utils/DayJs';
+import ActionPosts from './ActionPosts';
 
 export default function PostsPage() {
   const [isModal, setModal] = useState(false);
@@ -24,48 +25,7 @@ export default function PostsPage() {
       <DefaultLayout>
         <main className='container mx-auto px-4 lg:px-6 md:flex gap-10'>
           <section className='pb-5 md:w-3/12 lg:w-2/12 relative'>
-            <div className='sticky top-[70px]'>
-              <div className='pb-3 border-b-[1px]'>
-                <h1 className='font-semibold pt-5'>Phạm Thành Long</h1>
-                <p className='text-sm text-gray-500'>đây là mô tả nhé</p>
-              </div>
-              <div className='fixed md:static bottom-0 left-0 bg-white h-12 w-full flex items-center gap-10 sm:gap-5 pl-7 md:pl-2'>
-                <div className='flex gap-2'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-6 w-6'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
-                    />
-                  </svg>
-                  <span>1</span>
-                </div>
-                <div className='flex gap-2'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-6 w-6'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z'
-                    />
-                  </svg>
-                  <span>1</span>
-                </div>
-              </div>
-            </div>
+            <ActionPosts posts={Posts}/>
           </section>
           <section className='pb-5 md:w-9/12 md:py-5 lg:w-10/12'>
             <h1 className='text-xl sm:text-2xl font-bold pb-4'>{Posts?.title}</h1>
