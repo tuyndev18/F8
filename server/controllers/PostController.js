@@ -8,13 +8,15 @@ import { ConvertDate, RecentTimes } from '../Utils/ConvertDate.js';
 const postController = {
   getAll: async (req, res, next) => {
     try {
+      const page = Number.parseInt(req.query.page);
       const queryMethod = new QueryMethod(req.query, postModel.find({}))
         .pagination()
         .populate('userId', 'avatar fullName')
-        .sort();
-
+        .sort()
+        .lean();
       const data = await queryMethod.method;
-      res.json({ data });
+      const total = await postModel.count({});
+      res.json({ data: { list: data, total, page } });
     } catch (error) {
       next(error);
     }
@@ -194,7 +196,7 @@ const postController = {
 
       const data = await postModel.find({ slug }).populate('userId', 'userName avatar description').lean();
       const myPosts = await postModel
-        .find({ userId: data[0].userId._id, _id: {$ne: data[0]._id} }, { title: 1, slug: 1 })
+        .find({ userId: data[0].userId._id, _id: { $ne: data[0]._id } }, { title: 1, slug: 1 })
         .sort({ createdAt: 'desc' })
         .limit(4);
       res.json({ data: { ...data[0], myPosts } });
@@ -237,7 +239,7 @@ const postController = {
     try {
       const { id } = req.params;
       const data = await postModel.updateOne({ _id: id }, { $addToSet: { likes: req.userId } });
-      res.status(201).json({ mess: 'like' });
+      res.status(201).json({ message: 'like post' });
     } catch (error) {
       next(error);
     }
@@ -247,7 +249,7 @@ const postController = {
     try {
       const { id } = req.params;
       await postModel.updateOne({ _id: id }, { $pull: { likes: req.userId } });
-      res.status(201).json({ mess: 'unlike' });
+      res.status(201).json({ message: 'unlike post' });
     } catch (error) {
       next(error);
     }
@@ -256,7 +258,7 @@ const postController = {
     try {
       const { id, idc } = req.params;
       await commentModel.updateOne({ postId: id, _id: idc }, { $addToSet: { likes: req.userId } });
-      res.status(201).json({ mess: 'like comment' });
+      res.status(200).json({ mess: 'like comment' });
     } catch (error) {
       next(error);
     }
@@ -266,7 +268,7 @@ const postController = {
     try {
       const { id, idc } = req.params;
       await commentModel.updateOne({ postId: id, _id: idc }, { $pull: { likes: req.userId } });
-      res.status(201).json({ mess: 'unlike comment' });
+      res.status(200).json({ mess: 'unlike comment' });
     } catch (error) {
       next(error);
     }

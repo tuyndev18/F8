@@ -27,10 +27,6 @@ app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(cookieParser());
 
-app.use('/getrf/:id', async (req, res) => {
-  res.json(await client.get(`rf_${req.params.id}`))
-})
-
 socket(io);
 
 //Route configuration

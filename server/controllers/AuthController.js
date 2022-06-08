@@ -96,7 +96,7 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_AC_TOKEN,
-      { expiresIn: '10s' },
+      { expiresIn: '5m' },
     );
   },
   generateRefreshToken: (userId) => {
