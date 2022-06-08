@@ -60,6 +60,9 @@ export default function UserModal() {
           <Link to={`/new-post`}>
             <h3 className='cursor-pointer text-[14px] p-2 text-gray-700'>Viết Blog</h3>
           </Link>
+          <Link to={`/me/bookmark/posts`}>
+            <h3 className='cursor-pointer text-[14px] p-2 text-gray-700'>Bài viết đã lưu</h3>
+          </Link>
           <h3 className='cursor-pointer text-[14px] p-2 text-gray-700' onClick={logOut}>Đăng xuất</h3>
         </div>
       </div>

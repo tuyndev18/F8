@@ -21,15 +21,13 @@ router.post('/notifications/active/:type', userController.activeNotification);
 router.post('/:userId/follow', userController.followUser);
 router.post('/:userId/unfollow', userController.unfollowUser);
 router.post('/posts/:id/save', userController.savePost);
+router.post('/posts/:id/unsave', userController.unsavePost);
 
 // DELETE
 router.delete('/posts/:id', userController.deletePost);
-router.delete('/posts/:id/unsave', userController.unsavePost);
 
 //PUT
 router.put('/').put(userController.editUser);
 router.put('/posts/:id', userController.editPost);
 
 export default router;
-
-

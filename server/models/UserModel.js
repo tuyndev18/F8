@@ -45,7 +45,12 @@ const userSchema = mongoose.Schema(
     location: {
       type: String,
     },
-    PostSaved: [{ type: mongoose.Types.ObjectId, ref: 'Posts', default: [] }],
+    PostSaved: [
+      {
+        postId: { type: mongoose.Types.ObjectId, ref: 'Posts' },
+        createdAt: { type: Date },
+      },
+    ],
   },
   {
     timestamps: true,

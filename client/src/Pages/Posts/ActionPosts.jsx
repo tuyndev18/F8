@@ -2,15 +2,15 @@ import { PostApi } from 'Apis/PostApi';
 import clsx from 'clsx';
 import Modal from 'Components/Modal';
 import React, { useEffect, useRef, useState } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useQueryClient } from 'react-query';
+import Comments from './Comments';
 
 export default function ActionPosts({ posts }) {
   const [isModal, setModal] = useState(false);
   const [isLiked, setLiked] = useState();
+  const totalLike = useRef(0);
   const client = useQueryClient();
   const current_user = client.getQueryData('current_user');
-  const totalLike = useRef(0);
 
   useEffect(() => {
     setLiked(posts?.likes.includes(current_user?._id));
@@ -36,7 +36,7 @@ export default function ActionPosts({ posts }) {
           <h1 className='font-semibold pt-5'>Phạm Thành Long</h1>
           <p className='text-sm text-gray-500'>đây là mô tả nhé</p>
         </div>
-        <div className='fixed md:static bottom-0 left-0 bg-white h-12 w-full flex items-center gap-10 sm:gap-5 pl-7 md:pl-2'>
+        <div className='fixed  w-1/3 bottom-4 left-1/2 rounded-lg shadow-xl translate-x-[-50%] justify-evenly bg-white h-12 flex items-center md:static md:translate-x-0 md:shadow-none md:justify-start md:w-full sm:gap-5 md:pl-2'>
           <div className='flex gap-2 cursor-pointer' onClick={handleLike}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -81,11 +81,24 @@ export default function ActionPosts({ posts }) {
       <Modal isModal={isModal} setModal={setModal}>
         <div
           className={clsx(
-            'text-center bg-white fixed w-1/3 h-screen top-0 right-0 z-50 transition-transform duration-700',
+            'bg-white fixed w-1/3 h-screen top-0 right-0 z-50 transition-transform p-5 duration-700 overflow-y-auto',
             { 'translate-x-0': isModal, 'translate-x-[100%]': !isModal },
           )}
         >
-        
+          <div
+            onClick={() => {
+              setModal(false);
+            }}
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+              <path
+                fillRule='evenodd'
+                d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+                clipRule='evenodd'
+              />
+            </svg>
+          </div>
+          <Comments />
         </div>
       </Modal>
     </>
