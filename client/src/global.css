@@ -57,7 +57,32 @@ body::-webkit-scrollbar-thumb {
   padding-bottom: 15px;
   z-index: 20;
 }
+
 .tuyn-notification .name_test {
   font-weight: 600;
   font-size: 13px;
+}
+.tuyn-wrap-reactions > div > div {
+  height: 20px !important;
+  width: 20px !important;
+}
+.tuyn-wrap-reactions > div > div:last-child {
+  display: none !important;
+}
+
+.tuyn-custom-markdown blockquote {
+  border-left: 3px solid rgb(255, 122, 70);
+  padding-left: 20px;
+  margin: 15px 0px;
+}
+.tuyn-custom-markdown blockquote p {
+  font-size: 15px;
+  color: gray;
+}
+.tuyn-custom-markdown hr {
+  margin: 25px 0px;
+}
+.tuyn-custom-markdown ul li a { 
+  color: orange;
+  text-decoration: underline;
 }

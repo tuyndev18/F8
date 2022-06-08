@@ -47,7 +47,7 @@ const authCtrl = {
       const access_token = authCtrl.generateAccessToken(user._id);
       const refresh_token = authCtrl.generateRefreshToken(user._id);
 
-      client.setEx(`rf_${user._id}`, 60 * 60 * 24, refresh_token);
+      client.setEx(`rf_${user._id}`, 60 * 60 * 24 * 7, refresh_token);
 
       //attach rf_token to cookie.
       res.cookie('refresh_token', refresh_token, {
@@ -96,7 +96,7 @@ const authCtrl = {
         userId: userId,
       },
       process.env.GENERATE_AC_TOKEN,
-      { expiresIn: '5m' },
+      { expiresIn: '1d' },
     );
   },
   generateRefreshToken: (userId) => {

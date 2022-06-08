@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { UploadApi } from 'Apis/UploadApi';
 import axios from 'axios';
 import { UserApi } from 'Apis/UserApi';
+import { useNavigate } from 'react-router-dom';
 
 const mdParser = new MarkdownIt();
 
@@ -19,6 +20,7 @@ const options = [
 ];
 
 export default function CreatePostPage() {
+  const navigation = useNavigate();
   const [preview, setPreview] = useState();
   const [isShow, setShow] = useState(false);
   const formData = useRef({
@@ -36,13 +38,13 @@ export default function CreatePostPage() {
   };
 
   const handleEditorChange = ({ html, text }) => {
-    console.log(text)
+    console.log(text);
     formData.current.content = text;
   };
 
   const handleChange = (newValue, actionMeta) => {
     formData.current.tags = newValue.map((val) => {
-      return { label: val.label };
+    return { label: val.label };
     });
   };
   const submitForm = async () => {
@@ -52,6 +54,10 @@ export default function CreatePostPage() {
       const image = await UploadApi.single(body);
       formData.current.banner = image.urlImage;
       const result = await UserApi.addPost(formData.current);
+      toast.success('Tạo mới bài viết thành công !');
+      setTimeout(() => {
+        navigation('/');
+      }, 1000);
     } catch (error) {
       toast.error(error);
     }

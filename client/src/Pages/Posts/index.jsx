@@ -11,14 +11,9 @@ import DayJs from 'Utils/DayJs';
 import ActionPosts from './ActionPosts';
 
 export default function PostsPage() {
-  const [isModal, setModal] = useState(false);
-  const isMove = useRef(false);
+
   const { slug } = useParams();
   const { data: Posts } = useQuery(['posts', slug], async () => PostApi.getPostsBySlug(slug));
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
 
   return (
     <>
@@ -37,7 +32,7 @@ export default function PostsPage() {
                   alt=''
                 />
                 <div>
-                  <h3 className='font-semibold tex-sm'>Phạm Thành Long</h3>
+                  <h3 className='font-semibold tex-sm capitalize'>{Posts?.userId?.fullName}</h3>
                   <p className='text-xs text-gray-500'>
                     <span className='pr-4'>{DayJs.from(Posts?.createdAt)}</span>
                     <span>1 phút đọc</span>
@@ -71,7 +66,7 @@ export default function PostsPage() {
                 </p>
               ))}
             </div>
-            <div className='custom-highlighter-syntax pt-4 pb-6 sm:pt-5 sm:pb-7'>
+            <div className='tuyn-custom-markdown pt-4 pb-6 sm:pt-5 sm:pb-7'>
               <ReactMarkdown children={Posts?.content} components={SyntaxHighlight} />
             </div>
             <div className='border-b-2 border-red-500 pt-5 pb-7'>
@@ -164,31 +159,4 @@ export default function PostsPage() {
 </Modal> */
 }
 
-{
-  /* <h2
-className='relative mt-24 cursor-pointer tuyn-wrap py-3 hover:first:block inline-block mb-10'
-onMouseMove={() => {
-  if (!isMove.current) {
-    setModal(true);
-    isMove.current = true;
-  }
-}}
-onMouseLeave={() => {
-  if (isMove.current) {
-    isMove.current = false;
-    setModal(false);
-  }
-}}
->
-Thích
-<div className={clsx('absolute top-[-50px] tuyn-reactions', { hidden: !isModal }, { block: isModal })}>
-  <FacebookSelector
-    onSelect={(data) => {
-      console.log(data);
-      setModal(false);
-    }}
-  />
-</div>
-</h2>
-/> */
-}
+

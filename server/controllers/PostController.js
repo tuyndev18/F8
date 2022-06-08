@@ -194,7 +194,7 @@ const postController = {
     try {
       const { slug } = req.params;
 
-      const data = await postModel.find({ slug }).populate('userId', 'userName avatar description').lean();
+      const data = await postModel.find({ slug }).populate('userId', 'fullName avatar description').lean();
       const myPosts = await postModel
         .find({ userId: data[0].userId._id, _id: { $ne: data[0]._id } }, { title: 1, slug: 1 })
         .sort({ createdAt: 'desc' })

@@ -22,6 +22,7 @@ const postSchema = new mongoose.Schema(
     likes: [{ type: mongoose.Types.ObjectId }],
     descriptions: { type: String },
     heading: { type: String },
+    saver: [{ type: String }],
   },
 
   {

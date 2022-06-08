@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import React from 'react';
+import { WrapContainer } from 'Hooks/useContext';
+import React, { useContext } from 'react';
 
 export default function Modal({ isModal, setModal, children, isBackground }) {
   return (

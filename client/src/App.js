@@ -18,6 +18,7 @@ import Courses from 'Pages/Home/Courses/Courses';
 import Details from 'Pages/Home/Courses/Details';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import BookMark from 'Pages/Home/BookMark';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
             <Route path='' element={<Courses />} />
             <Route path=':slug' element={<Details />} />
           </Route>
+          <Route path='me/bookmark/posts' element={<BookMark/>} />
           <Route path='blog' element={<Blog />} />
         </Route>
         <Route path='*' element={<NotFound />} />
