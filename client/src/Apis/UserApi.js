@@ -7,10 +7,7 @@ export const UserApi = {
   postSaved: () => {
     return AxiosConfig.get('/users/posts/saved');
   },
-  savePost: (id) => {
-    return AxiosConfig.post(`/users/posts/${id}/save`);
-  },
-  unsavePost: (id) => {
-    return AxiosConfig.post(`/users/posts/${id}/unsave`);
+  archivePost: ({id, body}) => {
+    return AxiosConfig.post(`/users/posts/${id}/archive`, body);
   },
 };

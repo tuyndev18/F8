@@ -82,7 +82,28 @@ body::-webkit-scrollbar-thumb {
 .tuyn-custom-markdown hr {
   margin: 25px 0px;
 }
-.tuyn-custom-markdown ul li a { 
+.tuyn-custom-markdown ul li a {
   color: orange;
   text-decoration: underline;
+}
+.toast-tuyn {
+  z-index: 1000;
+  transition: transform 1s linear;
+  animation: TopToBottom 1.5s ease-in 1;
+}
+
+@keyframes TopToBottom {
+  0% {
+    transform: translate(50%, -20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(50%, 0);
+    opacity: 1;
+  }
+}
+.tuyn-hover-reaction:hover + .tuyn-reactions {
+  display: block;
+  animation: identifier 1s linear 0.5s 1;
+  transition: all 1s ease-in;
 }

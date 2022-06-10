@@ -1,84 +1,57 @@
-import { FacebookCounter, FacebookSelector, ReactionCounter } from '@charkour/react-reactions';
+import { FacebookCounter, FacebookSelector } from '@charkour/react-reactions';
+import { PostApi } from 'Apis/PostApi';
 import clsx from 'clsx';
 import React, { useRef, useState } from 'react';
+import { useQueryClient } from 'react-query';
 import ChildComment from './ChildComment';
 
-export default function ParentComment() {
+export default function ParentComment({ initial }) {
   const [isShow, setShow] = useState(false);
   const [isModal, setModal] = useState(false);
+  const [comments, setComments] = useState(initial);
   const isMove = useRef(false);
-  const buildNode = (emoji) => <div>{emoji}</div>;
-  const [reaction, setReaction] = useState([
-    {
-      emoji: 'like', // String name of reaction
-    },
-    {
-      emoji: 'love', // String name of reaction
-    },
-    {
-      emoji: 'haha', // String name of reaction
-    },
-    {
-      emoji: 'wow', // String name of reaction
-    },
-    {
-      emoji: 'sad', // String name of reaction
-    },
-    {
-      emoji: 'angry', // String name of reaction
-    },
-  ]);
+  const client = useQueryClient();
+  const current_user = client.getQueryData('current_user');
+
+  const handleReactions = async (type) => {
+    const result = await PostApi.reactionComments(comments._id, { emoji: type, isReaction: true });
+    setComments(result);
+    setModal(false);
+  };
+  const handleUnlike = async () => {
+    if (!comments.typeReaction) {
+      const result = await PostApi.reactionComments(comments._id, { emoji: 'like', isReaction: true });
+      setComments(result);
+      return;
+    }
+    const result = await PostApi.reactionComments(comments._id, { emoji: '', isReaction: false });
+    setComments(result);
+  };
   return (
     <div className='flex gap-3'>
-      <img
-        src='https://img.websosanh.vn/v2/users/review/images/4wvuq0i4ozs1q.jpg?compress=85'
-        alt=''
-        className='h-10 w-10 rounded-full object-cover'
-      />
+      <img src={comments?.userId?.avatar} alt='' className='h-10 w-10 rounded-full object-cover' />
       <div className='flex-1'>
         <div className='bg-gray-100 p-4 rounded-lg relative'>
-          <h3 className='text-sm font-bold mb-1'>Phương Linh</h3>
-          <p className='text-sm'>
-            Bài chia sẻ rất hay, bạn có thể giới thiệu thêm về các extension hỗ trợ Typescript trên VS code và so sánh
-            cú pháp 2 framework ReactJS vs TypeScript được ko ?
-          </p>
-          <div className='tuyn-wrap-reactions bg-white rounded-full py-1 px-3 shadow-sm flex gap-2 absolute bottom-0 translate-y-[50%] right-4'>
-            <FacebookCounter counters={reaction} />
-            <span className='font-medium text-sm text-gray-500'>{reaction.length}</span>
-          </div>
+          <h3 className='text-sm font-bold mb-1'>{comments?.userId?.fullName}</h3>
+          <p className='text-sm'>{comments?.content?.data}</p>
+          {comments?.reactions.length > 0 && (
+            <div className='tuyn-wrap-reactions bg-white rounded-full py-1 px-3 shadow-sm flex gap-2 items-center absolute bottom-0 translate-y-[50%] right-4'>
+              <FacebookCounter counters={comments?.reactions} />
+              <span className='font-semibold text-gray-400'>{comments?.reactions?.length}</span>
+            </div>
+          )}
         </div>
         <div className='py-2'>
-          <button
-            className='text-xs text-orange-600 mr-3 pt-3 font-medium relative cursor-pointer'
-            onMouseMove={() => {
-              if (!isMove.current) {
-                setModal(true);
-                isMove.current = true;
-              }
-            }}
-            onMouseLeave={() => {
-              if (isMove.current) {
-                isMove.current = false;
-                setModal(false);
-              }
-            }}
-          >
-            Thích
-            <div
-              className={clsx(
-                'absolute top-0 translate-y-[-90%] left-[-10px] tuyn-reactions',
-                { hidden: !isModal },
-                { block: isModal },
-              )}
+            <button
+              className='text-xs text-orange-600 relative mr-3 pt-3 font-medium cursor-pointer tuyn-hover-reaction'
+              onClick={handleUnlike}
             >
-              <FacebookSelector
-                onSelect={(data) => {
-                  setReaction([...reaction, { emoji: data }]);
-                  setModal(false);
-                }}
-              />
+              {!comments.typeReaction ? 'Thích' : comments.typeReaction}
+              <div className='absolute top-0 translate-y-[-85%] left-[-10px] tuyn-reactions hidden'>
+              <FacebookSelector onSelect={handleReactions} />
             </div>
-          </button>
+            </button>
+           
           <span className='text-xs text-orange-600 mr-3 font-medium'>Trả Lời</span>
           <span className='text-xs mr-3 text-gray-500 font-medium'>16 ngày trước</span>
         </div>

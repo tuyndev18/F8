@@ -1,10 +1,15 @@
-import { AuthApi } from 'Apis/AuthApi';
 import Footer from 'Components/Footer';
 import Header from 'Components/Header';
 import NavBar from 'Components/NavBar';
-import { useQueryClient } from 'react-query';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export default function HomeLayout({ children }) {
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [location]);
+
   return (
     <>
       <>
@@ -15,9 +20,7 @@ export default function HomeLayout({ children }) {
               <NavBar />
             </div>
           </section>
-          <section className='w-full lg:w-[calc(100%-100px)]'>
-            {children}
-          </section>
+          <section className='w-full lg:w-[calc(100%-100px)] min-h-screen'>{children}</section>
         </main>
         <Footer />
       </>

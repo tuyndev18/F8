@@ -1,22 +1,19 @@
 import { PostApi } from 'Apis/PostApi';
 import Posts from 'Components/Blog/Posts';
+import PostsSkeleton from 'Components/Skeleton/PostsSkeleton';
 import React, { useEffect, useRef } from 'react';
 import { useInfiniteQuery, useQuery } from 'react-query';
 import { useLocation } from 'react-router-dom';
 
 export default function Blog() {
   const RefInView = useRef();
-  const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } = useInfiniteQuery(
-    'posts_all',
-    PostApi.getAllPost,
-    {
-      getNextPageParam: (lastPage, pages) => {
-        if (lastPage.page * 3 < lastPage.total) {
-          return lastPage.page + 1;
-        }
-      },
+  const { data, fetchNextPage, hasNextPage, isSuccess } = useInfiniteQuery('posts_all', PostApi.getAllPost, {
+    getNextPageParam: (lastPage, pages) => {
+      if (lastPage.page * 4 < lastPage.total) {
+        return lastPage.page + 1;
+      }
     },
-  );
+  });
   useEffect(() => {
     const follow = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -34,13 +31,17 @@ export default function Blog() {
       </p>
       <section className='flex gap-8 justify-between flex-wrap lg:flex-nowrap'>
         <div className='w-full order-2 lg:order-1 lg:w-8/12'>
-          {data?.pages.map((posts, index) => (
-            <div key={index}>
-              {posts?.list.map((post, index) => (
-                <Posts posts={post} key={index} />
-              ))}
-            </div>
-          ))}
+          {isSuccess ? (
+            data?.pages.map((posts, index) => (
+              <div key={index}>
+                {posts?.list.map((post, index) => (
+                  <Posts posts={post} key={post._id} />
+                ))}
+              </div>
+            ))
+          ) : (
+            <PostsSkeleton />
+          )}
           <div className='scroll-call-api' ref={RefInView}></div>
           {!hasNextPage && (
             <p className='text-center text-orange-500 animate-bounce py-4'>Không còn kết quả nào để hiển thị nữa ^_^</p>
