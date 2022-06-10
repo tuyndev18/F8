@@ -19,10 +19,12 @@ import Details from 'Pages/Home/Courses/Details';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BookMark from 'Pages/Home/BookMark';
+import ToastTuyn from 'Components/Toast/ToastTuyn';
 
 function App() {
   return (
     <>
+    <ToastTuyn/>
       <ToastContainer
         position='top-right'
         autoClose={1500}

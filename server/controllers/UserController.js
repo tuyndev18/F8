@@ -76,26 +76,23 @@ const userCtrl = {
     }
   },
 
-  savePost: async (req, res, next) => {
+  archivePost: async (req, res, next) => {
     try {
       const { id } = req.params;
-      await UserModel.updateOne(
-        { _id: req.userId, 'PostSaved.postId': { $ne: id } },
-        { $push: { PostSaved: { postId: id, createdAt: new Date() } } },
-      );
-      await PostModel.updateOne({ _id: id }, { $addToSet: { saver: req.userId } });
-      res.status(201).json({ message: 'save post!' });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  unsavePost: async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      await UserModel.updateOne({ _id: req.userId }, { $pull: { PostSaved: { postId: id } } });
-      await PostModel.updateOne({ _id: id }, { $pull: { saver: req.userId } });
-      res.status(201).json({ message: 'unsave post!' });
+      const { type } = req.body;
+      if (type) {
+        await UserModel.updateOne(
+          { _id: req.userId, 'PostSaved.postId': { $ne: id } },
+          { $push: { PostSaved: { postId: id, createdAt: new Date() } } },
+        );
+      } else {
+        await UserModel.updateOne({ _id: req.userId }, { $pull: { PostSaved: { postId: id } } });
+      }
+      const data = await PostModel.find({ _id: id }).populate('userId', 'fullName avatar description').lean();
+      const archive = await UserModel.find({ _id: req.userId }).lean();
+      const isArchive = archive[0].PostSaved.some((val) => val.postId === id);
+      const isReactions = data[0].likes.some((val) => val === req.userId);
+      res.json({ data: { ...data[0], isReactions, isArchive } });
     } catch (error) {
       next(error);
     }

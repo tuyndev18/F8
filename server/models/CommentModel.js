@@ -10,13 +10,15 @@ const commentSchema = new mongoose.Schema(
     replyToId: {
       type: mongoose.Types.ObjectId,
     },
-    content: { type: String, required: true },
-    likes: { type: Array, ref: 'Users' },
+    childCount: { type: Number, default: 0 },
+    content: { data: { type: String }, code: { type: String } },
+    reactions: [{ emoji: String, by: { type: mongoose.Types.ObjectId, ref: 'Users' } }],
     lessonId: { type: String },
+    typeReaction: { type: String },
   },
   {
     timestamps: true,
-    versionKey: false,
+    versionKey: false,  
   },
 );
 

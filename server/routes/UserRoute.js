@@ -20,8 +20,7 @@ router.post('/notifications/add', userController.addNotification);
 router.post('/notifications/active/:type', userController.activeNotification);
 router.post('/:userId/follow', userController.followUser);
 router.post('/:userId/unfollow', userController.unfollowUser);
-router.post('/posts/:id/save', userController.savePost);
-router.post('/posts/:id/unsave', userController.unsavePost);
+router.post('/posts/:id/archive', userController.archivePost);
 
 // DELETE
 router.delete('/posts/:id', userController.deletePost);

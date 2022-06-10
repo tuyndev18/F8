@@ -2,48 +2,49 @@ import { PostApi } from 'Apis/PostApi';
 import clsx from 'clsx';
 import Modal from 'Components/Modal';
 import React, { useEffect, useRef, useState } from 'react';
-import { useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useParams } from 'react-router-dom';
 import Comments from './Comments';
 
-export default function ActionPosts({ posts }) {
+export default function ActionPosts() {
   const [isModal, setModal] = useState(false);
-  const [isLiked, setLiked] = useState();
-  const totalLike = useRef(0);
-  const client = useQueryClient();
-  const current_user = client.getQueryData('current_user');
+  const [Posts, setPosts] = useState([]);
+  const { slug } = useParams();
+
+  const { data } = useQuery(['posts', slug], async () => PostApi.getPostsBySlug(slug));
+  const updateReactions = useMutation(PostApi.reactionPosts, {
+    onSuccess: (data) => {
+      setPosts(data);
+    },
+  });
 
   useEffect(() => {
-    setLiked(posts?.likes.includes(current_user?._id));
-    totalLike.current = posts?.likes.length;
-  }, [posts]);
+    setPosts(data);
+  }, [data]);
 
-  const handleLike = async () => {
-    if (isLiked) {
-      await PostApi.unlikePosts(posts._id);
-      totalLike.current = totalLike.current - 1;
-      setLiked(false);
-    } else {
-      await PostApi.likePosts(posts._id);
-      totalLike.current = totalLike.current + 1;
-      setLiked(true);
+  const handleReactions = () => {
+    if (Posts?.isReactions) {
+      updateReactions.mutate({ id: Posts?._id, body: { isReaction: false } });
+      return;
     }
+    updateReactions.mutate({ id: Posts?._id, body: { isReaction: true } });
   };
 
   return (
     <>
       <div className='sticky top-[70px]'>
         <div className='pb-3 border-b-[1px]'>
-          <h1 className='font-semibold pt-5'>Phạm Thành Long</h1>
-          <p className='text-sm text-gray-500'>đây là mô tả nhé</p>
+          <h1 className='font-semibold pt-5'>{Posts?.userId?.fullName}</h1>
+          <p className='text-sm text-gray-500'>{Posts?.userId?.description}</p>
         </div>
         <div className='fixed  w-1/3 bottom-4 left-1/2 rounded-lg shadow-xl translate-x-[-50%] justify-evenly bg-white h-12 flex items-center md:static md:translate-x-0 md:shadow-none md:justify-start md:w-full sm:gap-5 md:pl-2'>
-          <div className='flex gap-2 cursor-pointer' onClick={handleLike}>
+          <div className='flex gap-2 cursor-pointer' onClick={handleReactions}>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               className='h-6 w-6'
-              fill={clsx({ none: !isLiked }, { red: isLiked })}
+              fill={clsx({ none: !Posts?.isReactions }, { red: Posts?.isReactions })}
               viewBox='0 0 24 24'
-              stroke={clsx({ currentColor: !isLiked }, { red: isLiked })}
+              stroke={clsx({ currentColor: !Posts?.isReactions }, { red: Posts?.isReactions })}
               strokeWidth={2}
             >
               <path
@@ -52,7 +53,7 @@ export default function ActionPosts({ posts }) {
                 d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
               />
             </svg>
-            <span>{totalLike.current}</span>
+            <span>{Posts?.likes?.length}</span>
           </div>
           <div
             className='flex gap-2 cursor-pointer'
@@ -78,11 +79,11 @@ export default function ActionPosts({ posts }) {
           </div>
         </div>
       </div>
-      <Modal isModal={isModal} setModal={setModal}>
+      {/* <Modal isModal={isModal} setModal={setModal}>
         <div
           className={clsx(
-            'bg-white fixed w-1/3 h-screen top-0 right-0 z-50 transition-transform p-5 duration-700 overflow-y-auto',
-            { 'translate-x-0': isModal, 'translate-x-[100%]': !isModal },
+            'bg-white fixed w-[90%] h-[calc(100vh-150px)] top-10 md:w-2/3 lg:w-1/2 2xl:w-1/3 md:h-screen md:top-0 right-0 z-50 transition-transform p-5 duration-700 overflow-y-auto',
+            { 'translate-x-[-5%] md:translate-x-0': isModal, 'translate-x-[100%]': !isModal },
           )}
         >
           <div
@@ -98,9 +99,9 @@ export default function ActionPosts({ posts }) {
               />
             </svg>
           </div>
-          <Comments />
+          <Comments posts={posts} />
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

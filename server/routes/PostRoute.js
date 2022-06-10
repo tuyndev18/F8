@@ -22,14 +22,10 @@ router.get('/:slug', postCtrl.getPostBySlug);
 router.use(auth);
 
 // POST
-router.post('/testhihi', (req, res) => {
-    res.json({data: "auth"})
-});
-router.post('/:id/like', postCtrl.likePost);
-router.post('/:id/unlike', postCtrl.unlikePost);
+
+router.post('/:id/reactions', postCtrl.reactionsPost);
 router.post('/:id/comments', postCtrl.addComment);
-router.post('/:id/comments/:idc/like', postCtrl.likeComment);
-router.post('/:id/comments/:idc/unlike', postCtrl.unlikeComment);
+router.post('/comments/:id/reactions', postCtrl.reactionsComment);
 
 //PUT
 router.put('/comments/:id', postCtrl.editComment);

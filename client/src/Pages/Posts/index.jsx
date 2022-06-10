@@ -11,7 +11,6 @@ import DayJs from 'Utils/DayJs';
 import ActionPosts from './ActionPosts';
 
 export default function PostsPage() {
-
   const { slug } = useParams();
   const { data: Posts } = useQuery(['posts', slug], async () => PostApi.getPostsBySlug(slug));
 
@@ -20,7 +19,7 @@ export default function PostsPage() {
       <DefaultLayout>
         <main className='container mx-auto px-4 lg:px-6 md:flex gap-10'>
           <section className='pb-5 md:w-3/12 lg:w-2/12 relative'>
-            <ActionPosts posts={Posts}/>
+            <ActionPosts />
           </section>
           <section className='pb-5 md:w-9/12 md:py-5 lg:w-10/12'>
             <h1 className='text-xl sm:text-2xl font-bold pb-4'>{Posts?.title}</h1>
@@ -72,7 +71,7 @@ export default function PostsPage() {
             <div className='border-b-2 border-red-500 pt-5 pb-7'>
               <h1 className='font-semibold text-lg pb-4'>Bài đăng cùng tác giả</h1>
               <ul className='pl-8 list-disc'>
-                {Posts?.myPosts.length > 0 ? (
+                {Posts?.myPosts?.length > 0 ? (
                   Posts?.myPosts.map((post, index) => (
                     <Link to={`/blog/${post.slug}`} key={index}>
                       <li className='hover:underline cursor-pointer'>{post.title}</li>
@@ -131,32 +130,3 @@ export default function PostsPage() {
     </>
   );
 }
-
-{
-  /* <button
-  onClick={() => {
-    setModal(true);
-  }}
->
-  show modal
-</button>
-<Modal isModal={isModal} setModal={setModal}>
-  <div
-    className={clsx(
-      'text-center bg-white fixed w-1/2 h-screen top-0 right-0 z-30 transition-transform duration-700',
-      { 'translate-x-0': isModal, 'translate-x-[100%]': !isModal },
-    )}
-  >
-    <h4
-      className='text-center'
-      onClick={() => {
-        setModal(false);
-      }}
-    >
-      close
-    </h4>
-  </div>
-</Modal> */
-}
-
-

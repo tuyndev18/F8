@@ -4,6 +4,7 @@ import commentModel from '../models/CommentModel.js';
 import UserModel from '../models/UserModel.js';
 // import tagModel from '../models/TagModel.js';
 import { ConvertDate, RecentTimes } from '../Utils/ConvertDate.js';
+import mongoose from 'mongoose';
 
 const postController = {
   getAll: async (req, res, next) => {
@@ -14,8 +15,18 @@ const postController = {
         .populate('userId', 'avatar fullName')
         .sort()
         .lean();
-      const data = await queryMethod.method;
+      const ListPost = await queryMethod.method;
       const total = await postModel.count({});
+      const archive = await UserModel.find({ _id: req.userId }).lean();
+      const data = ListPost.map((posts) => {
+        const isArchive = archive[0].PostSaved.some((val) => val.postId === posts._id.toString());
+        const isReactions = posts.likes.some((val) => val === req.userId);
+        return {
+          isArchive,
+          isReactions,
+          ...posts,
+        };
+      });
       res.json({ data: { list: data, total, page } });
     } catch (error) {
       next(error);
@@ -193,13 +204,11 @@ const postController = {
   getPostBySlug: async (req, res, next) => {
     try {
       const { slug } = req.params;
-
       const data = await postModel.find({ slug }).populate('userId', 'fullName avatar description').lean();
-      const myPosts = await postModel
-        .find({ userId: data[0].userId._id, _id: { $ne: data[0]._id } }, { title: 1, slug: 1 })
-        .sort({ createdAt: 'desc' })
-        .limit(4);
-      res.json({ data: { ...data[0], myPosts } });
+      const archive = await UserModel.find({ _id: req.userId }).lean();
+      const isArchive = archive[0].PostSaved.some((val) => val.postId === data[0]._id.toString());
+      const isReactions = data[0].likes.some((val) => val === req.userId);
+      res.json({ data: { ...data[0], isReactions, isArchive } });
     } catch (error) {
       next(error);
     }
@@ -225,50 +234,58 @@ const postController = {
     try {
       const { id } = req.params;
       const queryMethod = new QueryMethod(req.query, commentModel.find({ postId: id }))
-        .populate('userId', ['userName', 'avatar'])
+        .populate('userId', ['userName', 'avatar', 'fullName'])
         .pagination()
         .sort();
       const data = (await queryMethod.method) || [];
-      res.status(200).json(data);
+      res.status(200).json({ data });
     } catch (error) {
       next(error);
     }
   },
 
-  likePost: async (req, res, next) => {
+  reactionsPost: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const data = await postModel.updateOne({ _id: id }, { $addToSet: { likes: req.userId } });
-      res.status(201).json({ message: 'like post' });
+      const { isReaction } = req.body;
+      if (isReaction) {
+        await postModel.updateOne({ _id: id }, { $addToSet: { likes: req.userId } });
+      } else {
+        await postModel.updateOne({ _id: id }, { $pull: { likes: req.userId } });
+      }
+      const data = await postModel.find({ _id: id }).populate('userId', 'fullName avatar description').lean();
+      const archive = await UserModel.find({ _id: req.userId }).lean();
+      const isArchive = archive[0].PostSaved.some((val) => val.postId === id);
+      const isReactions = data[0].likes.some((val) => val === req.userId);
+      res.json({ data: { ...data[0], isReactions, isArchive } });
     } catch (error) {
       next(error);
     }
   },
 
-  unlikePost: async (req, res, next) => {
+  reactionsComment: async (req, res, next) => {
     try {
       const { id } = req.params;
-      await postModel.updateOne({ _id: id }, { $pull: { likes: req.userId } });
-      res.status(201).json({ message: 'unlike post' });
-    } catch (error) {
-      next(error);
-    }
-  },
-  likeComment: async (req, res, next) => {
-    try {
-      const { id, idc } = req.params;
-      await commentModel.updateOne({ postId: id, _id: idc }, { $addToSet: { likes: req.userId } });
-      res.status(200).json({ mess: 'like comment' });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  unlikeComment: async (req, res, next) => {
-    try {
-      const { id, idc } = req.params;
-      await commentModel.updateOne({ postId: id, _id: idc }, { $pull: { likes: req.userId } });
-      res.status(200).json({ mess: 'unlike comment' });
+      const { isReaction, emoji } = req.body;
+      const userId = req.userId;
+      if (!isReaction) {
+        await commentModel.updateOne({ _id: id }, { $pull: { reactions: { by: req.userId } }, typeReaction: '' });
+      } else {
+        const reaction = await commentModel.find({ _id: id, 'reactions.by': req.userId });
+        if (reaction.length === 0) {
+          await commentModel.updateOne(
+            { _id: id, 'reactions.emoji': { $ne: emoji } },
+            { $push: { reactions: { emoji, by: req.userId } }, typeReaction: emoji },
+          );
+        } else {
+          await commentModel.updateOne(
+            { _id: id, 'reactions.by': req.userId },
+            { $set: { 'reactions.$.emoji': emoji }, typeReaction: emoji },
+          );
+        }
+      }
+      const data = await commentModel.find({ _id: id }).populate('userId', 'userName avatar fullName');
+      res.status(201).json({ data: data[0] });
     } catch (error) {
       next(error);
     }
@@ -278,14 +295,16 @@ const postController = {
     try {
       const { id } = req.params;
       const { content } = req.body;
-      const data = await commentModel.create({
+      const result = await commentModel.create({
         userId: req.userId,
         postId: id,
         content,
         replyToId: req.body?.replyToId,
+        lessonId: req.body?.lessonId,
       });
-      await postModel.updateOne({ _id: id }, { $addToSet: { comments: data._id } });
-      res.status(201).json({ mess: 'add new comment successfully' });
+      console.log(result);
+      const data = await commentModel.find({ _id: result._id }).populate('userId', 'userName avatar fullName');
+      res.status(200).json({ data: data[0] });
     } catch (error) {
       next(error);
     }

@@ -7,10 +7,16 @@ export const PostApi = {
   getPostsBySlug: (slug) => {
     return AxiosConfig.get(`/posts/${slug}`);
   },
-  likePosts: (id) => {
-    return AxiosConfig.post(`/posts/${id}/like`);
+  reactionPosts: ({id, body}) => {
+    return AxiosConfig.post(`/posts/${id}/reactions`, body);
   },
-  unlikePosts: (id) => {
-    return AxiosConfig.post(`/posts/${id}/unlike`);
+  getComments: (id) => {
+    return AxiosConfig.get(`/posts/${id}/comments`);
+  },
+  addComment: ({ id, content }) => {
+    return AxiosConfig.post(`/posts/${id}/comments`, { content });
+  },
+  reactionComments: (id, body) => {
+    return AxiosConfig.post(`/posts/comments/${id}/reactions`, body);
   },
 };
