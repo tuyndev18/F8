@@ -102,8 +102,3 @@ body::-webkit-scrollbar-thumb {
     opacity: 1;
   }
 }
-.tuyn-hover-reaction:hover + .tuyn-reactions {
-  display: block;
-  animation: identifier 1s linear 0.5s 1;
-  transition: all 1s ease-in;
-}

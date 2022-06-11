@@ -6,8 +6,11 @@ import { Link } from 'react-router-dom';
 import DayJs from 'Utils/DayJs';
 
 export default function Posts({ posts }) {
-
   const [Posts, setPosts] = useState(posts);
+  useEffect(() => {
+    setPosts(posts);
+  }, [posts]);
+
   const UpdateArchive = useMutation(UserApi.archivePost, {
     onSuccess: (data) => {
       setPosts(data);
@@ -20,7 +23,7 @@ export default function Posts({ posts }) {
     }
     UpdateArchive.mutate({ id: Posts._id, body: { type: true } });
   };
-  
+
   return (
     <div className='rounded-xl border-2 p-4 mb-4'>
       <div className='flex justify-between mb-4'>

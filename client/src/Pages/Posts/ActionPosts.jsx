@@ -79,7 +79,7 @@ export default function ActionPosts() {
           </div>
         </div>
       </div>
-      {/* <Modal isModal={isModal} setModal={setModal}>
+      <Modal isModal={isModal} setModal={setModal}>
         <div
           className={clsx(
             'bg-white fixed w-[90%] h-[calc(100vh-150px)] top-10 md:w-2/3 lg:w-1/2 2xl:w-1/3 md:h-screen md:top-0 right-0 z-50 transition-transform p-5 duration-700 overflow-y-auto',
@@ -99,9 +99,9 @@ export default function ActionPosts() {
               />
             </svg>
           </div>
-          <Comments posts={posts} />
+          <Comments posts={Posts} />
         </div>
-      </Modal> */}
+      </Modal>
     </>
   );
 }

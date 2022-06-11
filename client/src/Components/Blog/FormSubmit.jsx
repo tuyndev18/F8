@@ -20,7 +20,7 @@ export default function FormSubmit({ posts, pushComment }) {
   };
   return (
     <>
-      <div
+      <textarea
         onClick={() => {
           setShow(true);
         }}
