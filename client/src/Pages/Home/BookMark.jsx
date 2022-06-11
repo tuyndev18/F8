@@ -9,7 +9,7 @@ import DayJs from 'Utils/DayJs';
 const Posts = ({ posts }) => {
   const [isModal, setModal] = useState(false);
   const client = useQueryClient();
-  const mutation = useMutation(UserApi.unsavePost, {
+  const mutation = useMutation(UserApi.archivePost, {
     onSuccess: (data, variables, context) => {
       client.invalidateQueries('book_mark');
     },
@@ -36,7 +36,7 @@ const Posts = ({ posts }) => {
         <Modal isModal={isModal} setModal={setModal}>
           <div
             className={clsx(
-              'fixed z-50 bg-white top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] px-10 py-8 border-b-4 border-orange-500 rounded-md',
+              'fixed z-50 bg-white left-5 right-5 sm:right-0 top-1/2 sm:left-1/2 sm:translate-x-[-50%] translate-y-[-50%] px-10 py-8 border-b-4 border-orange-500 rounded-md',
               { hidden: !isModal },
               { block: isModal },
             )}
@@ -46,7 +46,8 @@ const Posts = ({ posts }) => {
               <button
                 className='text-xs px-3 py-2 rounded-md font-bold shadow-sm bg-gradient-to-tr from-[#2cccff] to-[#22dfbf] text-white shadow-[#22dfbf] z-50'
                 onClick={() => {
-                  mutation.mutate(posts?.postId?._id);
+                  setModal(false);
+                  mutation.mutate({ id: posts?.postId?._id, body: { type: false } });
                 }}
               >
                 Chắc chắn

@@ -10,23 +10,24 @@ export default function ParentComment({ initial }) {
   const [isModal, setModal] = useState(false);
   const [comments, setComments] = useState(initial);
   const isMove = useRef(false);
+  const delayModal = useRef();
   const client = useQueryClient();
-  const current_user = client.getQueryData('current_user');
 
   const handleReactions = async (type) => {
-    const result = await PostApi.reactionComments(comments._id, { emoji: type, isReaction: true });
-    setComments(result);
+    // const result = await PostApi.reactionComments(comments._id, { emoji: type, isReaction: true });
+    // setComments(result);
     setModal(false);
   };
   const handleUnlike = async () => {
-    if (!comments.typeReaction) {
-      const result = await PostApi.reactionComments(comments._id, { emoji: 'like', isReaction: true });
-      setComments(result);
-      return;
-    }
-    const result = await PostApi.reactionComments(comments._id, { emoji: '', isReaction: false });
-    setComments(result);
+    // if (!comments.typeReaction) {
+    //   const result = await PostApi.reactionComments(comments._id, { emoji: 'like', isReaction: true });
+    //   setComments(result);
+    //   return;
+    // }
+    // const result = await PostApi.reactionComments(comments._id, { emoji: '', isReaction: false });
+    // setComments(result);
   };
+
   return (
     <div className='flex gap-3'>
       <img src={comments?.userId?.avatar} alt='' className='h-10 w-10 rounded-full object-cover' />
@@ -42,16 +43,33 @@ export default function ParentComment({ initial }) {
           )}
         </div>
         <div className='py-2'>
-            <button
-              className='text-xs text-orange-600 relative mr-3 pt-3 font-medium cursor-pointer tuyn-hover-reaction'
-              onClick={handleUnlike}
+          <button
+            className='text-xs text-orange-600 relative mr-3 pt-3 font-medium cursor-pointer tuyn-hover-reaction'
+            onClick={() => {
+              console.log('like nè hihi');
+            }}
+            onMouseOver={() => {
+              delayModal.current = setTimeout(() => {
+                setModal(true);
+              }, 700);
+            }}
+            onMouseLeave={() => {
+              clearTimeout(delayModal.current);
+              setModal(false);
+            }}
+          >
+            {!comments.typeReaction ? 'Thích' : comments.typeReaction}
+            <div
+              className={clsx(
+                'absolute top-0 translate-y-[-90%] left-[-10px] tuyn-reactions',
+                { hidden: !isModal },
+                { block: isModal },
+              )}
             >
-              {!comments.typeReaction ? 'Thích' : comments.typeReaction}
-              <div className='absolute top-0 translate-y-[-85%] left-[-10px] tuyn-reactions hidden'>
               <FacebookSelector onSelect={handleReactions} />
             </div>
-            </button>
-           
+          </button>
+
           <span className='text-xs text-orange-600 mr-3 font-medium'>Trả Lời</span>
           <span className='text-xs mr-3 text-gray-500 font-medium'>16 ngày trước</span>
         </div>
