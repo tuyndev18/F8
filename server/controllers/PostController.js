@@ -237,7 +237,15 @@ const postController = {
         .populate('userId', ['userName', 'avatar', 'fullName'])
         .pagination()
         .sort();
-      const data = (await queryMethod.method) || [];
+      const result = await queryMethod.method.lean();
+      const data = result.map((comments) => {
+        const typeReactions =
+          comments.reactions.find((reaction) => reaction.by.toString() === req.userId).emoji || 'Thích';
+        return {
+          ...comments,
+          typeReactions,
+        };
+      });
       res.status(200).json({ data });
     } catch (error) {
       next(error);
@@ -269,23 +277,24 @@ const postController = {
       const { isReaction, emoji } = req.body;
       const userId = req.userId;
       if (!isReaction) {
-        await commentModel.updateOne({ _id: id }, { $pull: { reactions: { by: req.userId } }, typeReaction: '' });
+        await commentModel.updateOne({ _id: id }, { $pull: { reactions: { by: userId } }, typeReaction: '' });
       } else {
-        const reaction = await commentModel.find({ _id: id, 'reactions.by': req.userId });
+        const reaction = await commentModel.find({ _id: id, 'reactions.by': userId });
         if (reaction.length === 0) {
           await commentModel.updateOne(
             { _id: id, 'reactions.emoji': { $ne: emoji } },
-            { $push: { reactions: { emoji, by: req.userId } }, typeReaction: emoji },
+            { $push: { reactions: { emoji, by: userId } }, typeReaction: emoji },
           );
         } else {
           await commentModel.updateOne(
-            { _id: id, 'reactions.by': req.userId },
+            { _id: id, 'reactions.by': userId },
             { $set: { 'reactions.$.emoji': emoji }, typeReaction: emoji },
           );
         }
       }
-      const data = await commentModel.find({ _id: id }).populate('userId', 'userName avatar fullName');
-      res.status(201).json({ data: data[0] });
+      const data = await commentModel.find({ _id: id }).populate('userId', 'userName avatar fullName').lean();
+      const typeReactions = data[0].reactions.find((val) => val.by.toString() === userId).emoji || 'Thích';
+      res.status(201).json({ data: { ...data[0], typeReactions } });
     } catch (error) {
       next(error);
     }
