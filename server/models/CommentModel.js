@@ -14,7 +14,6 @@ const commentSchema = new mongoose.Schema(
     content: { data: { type: String }, code: { type: String } },
     reactions: [{ emoji: String, by: { type: mongoose.Types.ObjectId, ref: 'Users' } }],
     lessonId: { type: String },
-    typeReaction: { type: String },
   },
   {
     timestamps: true,

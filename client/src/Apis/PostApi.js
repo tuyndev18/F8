@@ -7,7 +7,7 @@ export const PostApi = {
   getPostsBySlug: (slug) => {
     return AxiosConfig.get(`/posts/${slug}`);
   },
-  reactionPosts: ({id, body}) => {
+  reactionPosts: ({ id, body }) => {
     return AxiosConfig.post(`/posts/${id}/reactions`, body);
   },
   getComments: (id) => {
@@ -16,7 +16,7 @@ export const PostApi = {
   addComment: ({ id, content }) => {
     return AxiosConfig.post(`/posts/${id}/comments`, { content });
   },
-  reactionComments: (id, body) => {
+  reactionComments: ({ id, body }) => {
     return AxiosConfig.post(`/posts/comments/${id}/reactions`, body);
   },
 };
